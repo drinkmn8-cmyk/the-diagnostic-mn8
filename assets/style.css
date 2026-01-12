@@ -16,14 +16,28 @@ body {
   height: 100%;
 }
 
+/* ===== BACKGROUND FIX (TOP-CENTER SPOTLIGHT) ===== */
 body {
   margin: 0;
-  background: radial-gradient(
-      800px 600px at 50% 20%,
-      rgba(60, 30, 89, 0.35),
-      transparent 60%
+  min-height: 100vh;
+
+  /* Locked spotlight: top-center, controlled spread, no side wash */
+  background:
+    radial-gradient(
+      900px 520px at 50% 0%,
+      rgba(60, 30, 89, 0.42),
+      rgba(60, 30, 89, 0) 60%
+    ),
+    radial-gradient(
+      760px 420px at 50% 18%,
+      rgba(60, 30, 89, 0.16),
+      rgba(60, 30, 89, 0) 68%
     ),
     var(--bg);
+
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
@@ -102,7 +116,6 @@ body {
   transform: translateY(0);
   opacity: 0.88;
 }
-
 
 .lang {
   color: var(--muted);
@@ -189,6 +202,7 @@ body {
   border-color: rgba(255, 255, 255, 0.22);
   box-shadow: 0 0 0 3px rgba(60, 30, 89, 0.25);
 }
+
 .input-wide {
   width: 100%;
 }
@@ -276,6 +290,7 @@ body {
   font-size: 12px;
   margin: 0;
 }
+
 /* ---- Result styles ---- */
 .result-card {
   text-align: left;
