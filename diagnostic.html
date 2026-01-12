@@ -3,59 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Diagnostic — Questions</title>
-    <meta name="description" content="Diagnostic form — powered by MN8." />
+    <title>The Diagnostic</title>
+    <meta name="description" content="The Diagnostic powered by MN8." />
     <link rel="stylesheet" href="assets/style.css" />
   </head>
 
   <body>
     <main class="wrap">
-      <section class="card form-card">
-        <header class="header left">
-          <div class="kicker" id="dkicker">powered by MN8</div>
-          <h1 class="title small" id="dtitle">The Diagnostic</h1>
-          <p class="sub left" id="dsub">
-            Enter your details, then answer the questions with honesty.
-          </p>
-        </header>
+      <section class="card">
+        <div class="kicker" id="kicker">POWERED BY MN8</div>
 
-        <form id="diagForm" class="form">
-          <!-- Identity -->
-          <div class="grid2">
-            <div class="field">
-              <label class="label" for="firstName" id="lFirst">First name</label>
-              <input class="input" id="firstName" name="firstName" type="text" autocomplete="given-name" required />
-            </div>
+        <!-- Dots (progress) -->
+        <div class="dots" id="dots"></div>
 
-            <div class="field">
-              <label class="label" for="lastName" id="lLast">Last name</label>
-              <input class="input" id="lastName" name="lastName" type="text" autocomplete="family-name" required />
-            </div>
+        <h1 class="title" id="title">The Diagnostic</h1>
+        <p class="sub left" id="sub">
+          Enter your details, then answer the questions with honesty.
+        </p>
+
+        <form id="diagForm" autocomplete="on">
+          <!-- STEP CONTENT INJECTED HERE -->
+          <div id="stepMount"></div>
+
+          <div class="actions row" style="margin-top: 18px;">
+            <button class="btn" id="continueBtn" type="button">Continue</button>
+            <button class="ghost" id="backBtn" type="button">Back</button>
           </div>
 
-<div class="field">
-  <label class="label" for="email" id="lEmail">Email</label>
-  <input
-    class="input input-wide"
-    id="email"
-    name="email"
-    type="email"
-    autocomplete="email"
-    required
-  />
-</div>
-
-
-          <!-- Questions injected by JS -->
-          <div id="questions"></div>
-
-
-          <div class="actions row">
-            <button class="btn" type="submit" id="submitBtn">View my diagnostic</button>
-            <button class="ghost" type="button" id="backBtn">Back</button>
-          </div>
-
-          <p class="hint" id="hint">
+          <p class="hint" id="hint" style="margin-top: 12px;">
             Your answers are used only to generate your diagnostic.
           </p>
         </form>
@@ -64,7 +39,7 @@
 
     <script src="assets/app.js"></script>
     <script>
-      window.MN8_DIAG.initDiagnosticPage();
+      window.MN8_DIAG.initDiagnosticSteps();
     </script>
   </body>
 </html>
