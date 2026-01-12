@@ -1,1 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Diagnostic — Results</title>
+    <meta name="description" content="Diagnostic results — powered by MN8." />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
 
+  <body>
+    <main class="wrap">
+      <section class="card result-card">
+        <!-- Loading -->
+        <div id="loading">
+          <div class="kicker" id="rkicker">powered by MN8</div>
+          <h1 class="title small" id="rtitle">The Diagnostic</h1>
+
+          <div class="loader">
+            <div class="loaderTitle" id="loaderTitle">Compiling your diagnostic…</div>
+            <div class="loaderLine" id="loaderLine">Reviewing response patterns</div>
+          </div>
+
+          <div class="progress">
+            <div class="bar" id="bar"></div>
+          </div>
+
+          <p class="sub left" id="rnote">
+            This usually takes about 60–90 seconds.
+          </p>
+        </div>
+
+        <!-- Result -->
+        <div id="result" style="display: none;">
+          <div class="kicker" id="outKicker">powered by MN8</div>
+          <h1 class="title small" id="outTitle">Diagnostic Summary</h1>
+
+          <p class="outSummary" id="outSummary"></p>
+
+          <div class="outBlock">
+            <div class="outLabel" id="outLabel">What your responses indicate</div>
+            <ul class="outList" id="outList"></ul>
+          </div>
+
+          <div class="outCore" id="outCore"></div>
+
+          <div class="outEnd" id="outEnd">Reading complete.</div>
+
+          <div class="actions row" style="margin-top: 18px;">
+            <a class="btn" id="ctaBtn" href="#" role="button">See MN8</a>
+            <button class="ghost" id="restartBtn" type="button">Restart</button>
+          </div>
+
+          <p class="hint" id="outHint" style="margin-top: 12px;">
+            A copy has been sent to your email.
+          </p>
+        </div>
+
+        <!-- Error -->
+        <div id="error" style="display: none;">
+          <div class="kicker">powered by MN8</div>
+          <h1 class="title small">Unable to generate</h1>
+          <p class="sub left">
+            Something blocked the diagnostic generation. Please try again.
+          </p>
+          <div class="actions row" style="margin-top: 12px;">
+            <button class="btn" id="tryAgainBtn" type="button">Try again</button>
+            <a class="ghost" href="diagnostic.html" role="button">Back</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/app.js"></script>
+    <script>
+      window.MN8_DIAG.initResultPage();
+    </script>
+  </body>
+</html>
