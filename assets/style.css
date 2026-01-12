@@ -188,6 +188,9 @@ body {
   border-color: rgba(255, 255, 255, 0.22);
   box-shadow: 0 0 0 3px rgba(60, 30, 89, 0.25);
 }
+.input-wide {
+  width: 100%;
+}
 
 .divider {
   height: 1px;
