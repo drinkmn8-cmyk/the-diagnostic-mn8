@@ -83,7 +83,7 @@ body {
 .btn {
   appearance: none;
   border: 0;
-  background: linear-gradient(135deg, var(--accent), rgba(60, 30, 89, 0.7));
+  background: #a985d9; /* MN8 core purple */
   color: white;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -95,13 +95,14 @@ body {
 }
 
 .btn:hover {
-  transform: translateY(-1px);
+  opacity: 0.92;
 }
 
 .btn:active {
-  transform: translateY(0px);
-  opacity: 0.95;
+  transform: translateY(0);
+  opacity: 0.88;
 }
+
 
 .lang {
   color: var(--muted);
