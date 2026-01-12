@@ -16,12 +16,10 @@ body {
   height: 100%;
 }
 
-/* ===== BACKGROUND FIX (TOP-CENTER SPOTLIGHT) ===== */
+/* ===== BACKGROUND (TOP-CENTER SPOTLIGHT) ===== */
 body {
   margin: 0;
   min-height: 100vh;
-
-  /* Locked spotlight: top-center, controlled spread, no side wash */
   background:
     radial-gradient(
       900px 520px at 50% 0%,
@@ -53,7 +51,8 @@ body {
 .card {
   width: 100%;
   max-width: 720px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 50%),
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 50%),
     var(--card);
   border: 1px solid var(--hair);
   border-radius: 22px;
