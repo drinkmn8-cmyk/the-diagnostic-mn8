@@ -3,43 +3,257 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Diagnostic</title>
-    <meta name="description" content="The Diagnostic powered by MN8." />
+    <title>The Diagnostic — Powered by MN8</title>
+
+    <!-- If you already have assets/style.css, keep this line. -->
     <link rel="stylesheet" href="assets/style.css" />
+
+    <!-- Minimal fallback styles so it still looks right even if CSS path changes -->
+    <style>
+      :root{
+        --bg:#06060a;
+        --card:rgba(20,20,28,.62);
+        --card2:rgba(20,20,28,.78);
+        --line:rgba(255,255,255,.08);
+        --text:rgba(255,255,255,.92);
+        --muted:rgba(255,255,255,.62);
+        --muted2:rgba(255,255,255,.45);
+        --purple:#b08cf3; /* your new button tone */
+        --purple2:#9a74ef;
+        --radius:28px;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        min-height:100vh;
+        display:grid;
+        place-items:center;
+        color:var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        background:
+          radial-gradient(1200px 600px at 55% 0%, rgba(155,85,255,.32), transparent 55%),
+          radial-gradient(900px 500px at 20% 20%, rgba(90,40,160,.25), transparent 60%),
+          var(--bg);
+      }
+      .wrap{width:min(980px,92vw); padding:28px 0;}
+      .card{
+        background: linear-gradient(180deg, var(--card), var(--card2));
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:var(--radius);
+        box-shadow: 0 40px 120px rgba(0,0,0,.65);
+        padding:44px 52px 32px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+      .kicker{
+        letter-spacing:.22em;
+        font-size:12px;
+        color:rgba(255,255,255,.62);
+        text-transform:uppercase;
+      }
+      h1{
+        margin:10px 0 10px;
+        font-size:56px;
+        line-height:1.02;
+        letter-spacing:-.02em;
+      }
+      .sub{
+        color:var(--muted);
+        font-size:16px;
+        margin:0 0 26px;
+        max-width:58ch;
+      }
+
+      .grid{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:16px;
+        margin-top:18px;
+      }
+      .field{display:flex; flex-direction:column; gap:8px;}
+      label{
+        font-size:13px;
+        color:rgba(255,255,255,.68);
+      }
+      input{
+        width:100%;
+        padding:14px 16px;
+        border-radius:14px;
+        border:1px solid rgba(255,255,255,.10);
+        background: rgba(0,0,0,.20);
+        color:rgba(255,255,255,.92);
+        outline:none;
+        font-size:15px;
+      }
+      input:focus{
+        border-color: rgba(176,140,243,.55);
+        box-shadow: 0 0 0 3px rgba(176,140,243,.12);
+      }
+      .full{grid-column: 1 / -1;}
+
+      .consent{
+        margin-top:16px;
+        padding-top:14px;
+        border-top:1px solid var(--line);
+        display:flex;
+        gap:10px;
+        align-items:flex-start;
+      }
+      .consent input[type="checkbox"]{
+        width:18px; height:18px; margin-top:2px;
+        accent-color: var(--purple);
+      }
+      .consent p{
+        margin:0;
+        color:var(--muted2);
+        font-size:12.5px;
+        line-height:1.35;
+      }
+      .consent b{color:rgba(255,255,255,.72); font-weight:600}
+
+      .actions{
+        display:flex;
+        gap:14px;
+        margin-top:22px;
+        align-items:center;
+      }
+      .btn{
+        border:1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.06);
+        color: rgba(255,255,255,.86);
+        padding:12px 22px;
+        border-radius:14px;
+        font-weight:600;
+        cursor:pointer;
+        transition:.15s ease;
+      }
+      .btn:hover{background: rgba(255,255,255,.09)}
+      .btnPrimary{
+        background: var(--purple);
+        border-color: rgba(0,0,0,.0);
+        color: rgba(10,10,14,.92);
+        min-width:210px;
+      }
+      .btnPrimary:hover{background: var(--purple2)}
+      .btnPrimary:disabled{
+        opacity:.45;
+        cursor:not-allowed;
+      }
+
+      @media (max-width:760px){
+        .card{padding:34px 26px 26px}
+        h1{font-size:42px}
+        .grid{grid-template-columns:1fr}
+      }
+    </style>
   </head>
 
   <body>
     <main class="wrap">
-      <section class="card">
-        <div class="kicker" id="kicker">POWERED BY MN8</div>
+      <section class="card" role="region" aria-label="The Diagnostic">
+        <div class="kicker">POWERED BY MN8</div>
+        <h1>The Diagnostic</h1>
+        <p class="sub">Enter your details, then answer the questions with honesty.</p>
 
-        <!-- Dots (progress) -->
-        <div class="dots" id="dots"></div>
+        <!-- Identity step -->
+        <form id="identityForm" novalidate>
+          <div class="grid">
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input id="firstName" name="firstName" type="text" autocomplete="given-name" required />
+            </div>
 
-        <h1 class="title" id="title">The Diagnostic</h1>
-        <p class="sub left" id="sub">
-          Enter your details, then answer the questions with honesty.
-        </p>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input id="lastName" name="lastName" type="text" autocomplete="family-name" required />
+            </div>
 
-        <form id="diagForm" autocomplete="on">
-          <!-- STEP CONTENT INJECTED HERE -->
-          <div id="stepMount"></div>
-
-          <div class="actions row" style="margin-top: 18px;">
-            <button class="btn" id="continueBtn" type="button">Continue</button>
-            <button class="ghost" id="backBtn" type="button">Back</button>
+            <div class="field full">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
           </div>
 
-          <p class="hint" id="hint" style="margin-top: 12px;">
-            Your answers are used only to generate your diagnostic.
-          </p>
+          <!-- Consent -->
+          <div class="consent">
+            <input id="consent" type="checkbox" required />
+            <p>
+              <b>Consent:</b> By continuing, you agree to receive your diagnostic by email and occasional MN8 updates.
+              You can unsubscribe anytime.
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="actions">
+            <button id="continueBtn" class="btn btnPrimary" type="submit" disabled>
+              Continue
+            </button>
+            <button class="btn" type="button" id="backBtn">Back</button>
+          </div>
         </form>
       </section>
     </main>
 
-    <script src="assets/app.js"></script>
     <script>
-      window.MN8_DIAG.initDiagnosticSteps();
+      // ---------- Config ----------
+      const INTRO_PAGE = "index.html";
+      // Later: when we add the question flow, submit will move to "Question 1" instead of result.
+      const NEXT_STEP = "q1"; // placeholder (we’ll implement steps next)
+
+      // ---------- Elements ----------
+      const form = document.getElementById("identityForm");
+      const firstName = document.getElementById("firstName");
+      const lastName = document.getElementById("lastName");
+      const email = document.getElementById("email");
+      const consent = document.getElementById("consent");
+      const continueBtn = document.getElementById("continueBtn");
+      const backBtn = document.getElementById("backBtn");
+
+      function isValidEmail(v){
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
+      }
+
+      function updateButtonState(){
+        const ok =
+          firstName.value.trim().length >= 1 &&
+          lastName.value.trim().length >= 1 &&
+          isValidEmail(email.value) &&
+          consent.checked;
+
+        continueBtn.disabled = !ok;
+      }
+
+      [firstName, lastName, email, consent].forEach(el => {
+        el.addEventListener("input", updateButtonState);
+        el.addEventListener("change", updateButtonState);
+      });
+
+      backBtn.addEventListener("click", () => {
+        window.location.href = INTRO_PAGE;
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        updateButtonState();
+        if (continueBtn.disabled) return;
+
+        // Save identity for later steps/results
+        const identity = {
+          firstName: firstName.value.trim(),
+          lastName: lastName.value.trim(),
+          email: email.value.trim(),
+          consent: true,
+          ts: Date.now(),
+        };
+        localStorage.setItem("mn8_diagnostic_identity", JSON.stringify(identity));
+
+        // NEXT: we will replace this with the Question 1 screen (step-based flow)
+        // For now, just show a placeholder so you see it works.
+        alert("Identity saved. Next step: Question 1 (we’ll build the step flow next).");
+      });
+
+      // Initialize
+      updateButtonState();
     </script>
   </body>
 </html>
