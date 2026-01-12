@@ -130,19 +130,6 @@ body {
   opacity: 0.55;
 }
 
-.footer {
-  margin-top: 18px;
-  text-align: center;
-  padding-top: 18px;
-  border-top: 1px solid var(--hair);
-}
-
-.fine {
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
 /* ---- Form styles ---- */
 .form-card .header.left {
   text-align: left;
