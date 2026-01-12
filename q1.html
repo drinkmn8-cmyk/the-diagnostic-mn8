@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Q1 — The Diagnostic | MN8</title>
+    <link rel="stylesheet" href="assets/style.css?v=4" />
+  </head>
+
+  <body>
+    <main class="wrap">
+      <section class="card" role="region" aria-label="Diagnostic Question 1">
+        <header class="header left">
+          <div class="kicker">DIAGNOSTIC · QUESTION 1</div>
+          <h1 class="title small">What has actually changed?</h1>
+          <p class="sub left">
+            This question is not about what you lack.  
+            It’s about what you’ve lost compared to when you were disciplined.
+          </p>
+        </header>
+
+        <form id="q1Form" class="form">
+          <div class="q">
+            <p class="q-title">
+              Compared to the period when you were disciplined, what has changed the most for you?
+            </p>
+
+            <div class="options">
+              <div class="opt">
+                <input class="radio" type="checkbox" id="q1a" value="lost_consistency" />
+                <label for="q1a">
+                  I no longer have the same consistency, even when I know what to do.
+                </label>
+              </div>
+
+              <div class="opt">
+                <input class="radio" type="checkbox" id="q1b" value="lost_self_trust" />
+                <label for="q1b">
+                  I’ve lost the confidence that “I’ll actually stick to it.”
+                </label>
+              </div>
+
+              <div class="opt">
+                <input class="radio" type="checkbox" id="q1c" value="mental_cost" />
+                <label for="q1c">
+                  Moving forward costs me more mentally than it used to.
+                </label>
+              </div>
+
+              <div class="opt">
+                <input class="radio" type="checkbox" id="q1d" value="identity_gap" />
+                <label for="q1d">
+                  I don’t fully recognize myself as the person I used to be.
+                </label>
+              </div>
+
+              <div class="opt">
+                <input class="radio" type="checkbox" id="q1e" value="other" />
+                <label for="q1e">Other</label>
+              </div>
+
+              <div class="otherWrap" id="otherWrap">
+                <input
+                  class="input otherInput"
+                  type="text"
+                  id="otherText"
+                  placeholder="Specify what has changed…"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="actions row">
+            <button type="button" class="ghost" id="backBtn">Back</button>
+            <button type="submit" class="btn" id="nextBtn">Continue</button>
+          </div>
+        </form>
+
+        <!-- French reference (not shown, for internal clarity / future toggle) -->
+        <!--
+        QUESTION DE BASE — PERTE RÉELLE
+        Fonction : identifier ce qui a été perdu (pas ce qui manque)
+
+        Qu’est-ce qui a le plus changé chez toi par rapport à la période où tu étais discipliné(e) ?
+
+        ☐ Je n’ai plus la même constance, même quand je sais quoi faire  
+        ☐ J’ai perdu la confiance que “je vais tenir”  
+        ☐ Avancer me coûte plus mentalement qu’avant  
+        ☐ Je me reconnais moins dans la personne que j’étais  
+        ☐ Autre (préciser)
+        -->
+      </section>
+    </main>
+
+    <script>
+      const backBtn = document.getElementById("backBtn");
+      const form = document.getElementById("q1Form");
+      const otherCheckbox = document.getElementById("q1e");
+      const otherWrap = document.getElementById("otherWrap");
+      const otherText = document.getElementById("otherText");
+
+      backBtn.addEventListener("click", () => {
+        window.location.href = "diagnostic.html";
+      });
+
+      otherCheckbox.addEventListener("change", () => {
+        otherWrap.classList.toggle("show", otherCheckbox.checked);
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const answers = [];
+        document
+          .querySelectorAll('input[type="checkbox"]:checked')
+          .forEach((cb) => answers.push(cb.value));
+
+        const payload = {
+          q1: answers,
+          other: otherText.value.trim(),
+          ts: Date.now(),
+        };
+
+        localStorage.setItem("mn8_q1", JSON.stringify(payload));
+        window.location.href = "q2.html";
+      });
+    </script>
+  </body>
+</html>
