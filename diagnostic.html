@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Diagnostic — Powered by MN8</title>
-
-    <!-- ONE stylesheet only (cache-bust when needed) -->
     <link rel="stylesheet" href="assets/style.css?v=3" />
   </head>
 
@@ -29,39 +27,32 @@
               <label class="label" for="lastName">Last name</label>
               <input class="input" id="lastName" name="lastName" type="text" autocomplete="family-name" required />
             </div>
-
-            <div class="field" style="grid-column: 1 / -1;">
-              <label class="label" for="email">Email</label>
-              <input class="input" id="email" name="email" type="email" autocomplete="email" required />
-            </div>
           </div>
 
-          <div class="divider" aria-hidden="true"></div>
+          <div class="field">
+            <label class="label" for="email">Email</label>
+            <input class="input input-wide" id="email" name="email" type="email" autocomplete="email" required />
+          </div>
 
-          <div class="field" style="gap:10px;">
-            <label class="label" style="display:flex; gap:10px; align-items:flex-start;">
-              <input id="consent" type="checkbox" required style="margin-top:2px;" />
-              <span style="color: rgba(255,255,255,.62); font-size: 12.5px; line-height: 1.35;">
-                <strong style="color: rgba(255,255,255,.78); font-weight: 600;">Consent:</strong>
-                By continuing, you agree to receive your diagnostic by email and occasional MN8 updates.
-                You can unsubscribe anytime.
-              </span>
-            </label>
+          <div class="consent">
+            <input id="consent" type="checkbox" required />
+            <p class="hint">
+              By continuing, you agree to receive your diagnostic by email and occasional MN8 updates.
+              You can unsubscribe anytime.
+            </p>
           </div>
 
           <div class="actions row">
             <button id="continueBtn" class="btn" type="submit" disabled>Continue</button>
             <button class="ghost" type="button" id="backBtn">Back</button>
           </div>
-
-          <p class="hint">Your answers are used only to generate your diagnostic.</p>
         </form>
       </section>
     </main>
 
     <script>
       const INTRO_PAGE = "index.html";
-      const NEXT_PAGE = "diagnostic.html"; // your Q1–Q7 step file
+      const NEXT_PAGE = "q1.html"; // make this next
 
       const form = document.getElementById("identityForm");
       const firstName = document.getElementById("firstName");
