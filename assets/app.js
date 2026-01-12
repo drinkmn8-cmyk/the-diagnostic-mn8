@@ -382,4 +382,166 @@ window.MN8_DIAG.initDiagnosticPage = function initDiagnosticPage() {
     window.location.href = "result.html";
   });
 };
+window.MN8_DIAG.initResultPage = function initResultPage() {
+  const lang = localStorage.getItem("mn8_diag_lang") === "fr" ? "fr" : "en";
+
+  const ui = {
+    en: {
+      kicker: "powered by MN8",
+      title: "The Diagnostic",
+      compiling: "Compiling your diagnostic…",
+      note: "This usually takes about 60–90 seconds.",
+      summaryTitle: "Diagnostic Summary",
+      indicates: "What your responses indicate",
+      done: "Reading complete.",
+      cta: "See MN8",
+      restart: "Restart",
+      emailed: "A copy has been sent to your email.",
+      tryAgain: "Try again",
+      loaderLines: [
+        "Reviewing response patterns",
+        "Identifying structural gaps",
+        "Cross-referencing discipline signals",
+        "Finalizing diagnostic summary",
+      ],
+    },
+    fr: {
+      kicker: "propulsé par MN8",
+      title: "Le Diagnostic",
+      compiling: "Compilation de ton diagnostic…",
+      note: "Cela prend généralement 60 à 90 secondes.",
+      summaryTitle: "Synthèse du diagnostic",
+      indicates: "Ce que tes réponses indiquent",
+      done: "Lecture terminée.",
+      cta: "Découvrir MN8",
+      restart: "Recommencer",
+      emailed: "Une copie a été envoyée par email.",
+      tryAgain: "Réessayer",
+      loaderLines: [
+        "Analyse des réponses",
+        "Identification des écarts de structure",
+        "Vérification des signaux de discipline",
+        "Finalisation de la synthèse",
+      ],
+    },
+  }[lang];
+
+  // Wire base copy
+  const rk = document.getElementById("rkicker");
+  const rt = document.getElementById("rtitle");
+  const loaderTitle = document.getElementById("loaderTitle");
+  const rnote = document.getElementById("rnote");
+  const outKicker = document.getElementById("outKicker");
+  const outTitle = document.getElementById("outTitle");
+  const outLabel = document.getElementById("outLabel");
+  const outEnd = document.getElementById("outEnd");
+  const ctaBtn = document.getElementById("ctaBtn");
+  const restartBtn = document.getElementById("restartBtn");
+
+  rk.textContent = ui.kicker;
+  rt.textContent = ui.title;
+  loaderTitle.textContent = ui.compiling;
+  rnote.textContent = ui.note;
+
+  outKicker.textContent = ui.kicker;
+  outTitle.textContent = ui.summaryTitle;
+  outLabel.textContent = ui.indicates;
+  outEnd.textContent = ui.done;
+
+  ctaBtn.textContent = ui.cta;
+  restartBtn.textContent = ui.restart;
+
+  // TODO: set your real MN8 URL later
+  ctaBtn.href = "https://mn8.com"; // replace later
+
+  restartBtn.addEventListener("click", () => {
+    localStorage.removeItem("mn8_diag_payload");
+    window.location.href = "diagnostic.html";
+  });
+
+  const payloadRaw = localStorage.getItem("mn8_diag_payload");
+  if (!payloadRaw) {
+    // no payload -> go back
+    window.location.href = "diagnostic.html";
+    return;
+  }
+
+  const payload = JSON.parse(payloadRaw);
+
+  // 60–90s feel (we don't force waiting if API returns faster, but we keep it calm)
+  const loaderLine = document.getElementById("loaderLine");
+  const bar = document.getElementById("bar");
+  let step = 0;
+
+  const start = Date.now();
+  const targetMs = 75000; // ~75s center; feels like 60–90
+  const lineTimer = setInterval(() => {
+    step = (step + 1) % ui.loaderLines.length;
+    loaderLine.textContent = ui.loaderLines[step];
+  }, 15000);
+
+  const barTimer = setInterval(() => {
+    const elapsed = Date.now() - start;
+    const pct = Math.min(92, Math.floor((elapsed / targetMs) * 92));
+    bar.style.width = pct + "%";
+  }, 350);
+
+  function showResult(out) {
+    clearInterval(lineTimer);
+    clearInterval(barTimer);
+    bar.style.width = "100%";
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("error").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("outSummary").textContent = out.summary || "";
+
+    const list = document.getElementById("outList");
+    list.innerHTML = "";
+    (out.indicators || []).slice(0, 6).forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      list.appendChild(li);
+    });
+
+    document.getElementById("outCore").textContent = out.core || "";
+    document.getElementById("outHint").textContent = out.emailed
+      ? ui.emailed
+      : "";
+  }
+
+  function showError() {
+    clearInterval(lineTimer);
+    clearInterval(barTimer);
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("result").style.display = "none";
+    document.getElementById("error").style.display = "block";
+  }
+
+  // Try again button
+  const tryAgainBtn = document.getElementById("tryAgainBtn");
+  tryAgainBtn.textContent = ui.tryAgain;
+  tryAgainBtn.addEventListener("click", () => {
+    window.location.reload();
+  });
+
+  // Call backend
+  fetch("/api/diagnostic", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  })
+    .then(async (r) => {
+      const data = await r.json().catch(() => null);
+      if (!r.ok || !data) throw new Error("bad_response");
+      return data;
+    })
+    .then((out) => {
+      showResult(out);
+    })
+    .catch(() => {
+      showError();
+    });
+};
 
