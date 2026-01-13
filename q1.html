@@ -1,69 +1,77 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Diagnostic — Q1</title>
-    <link rel="stylesheet" href="assets/style.css?v=3" />
-  </head>
+/* ===== Q PAGES — APPLE-LIKE HIERARCHY ===== */
 
-  <body>
-    <main class="wrap">
-      <section class="card form-card">
+.q-prompt{
+  margin: 0 0 14px;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.94);
+}
 
-        <form class="form" id="q1Form">
+.choices{
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
 
-          <p class="q-title">
-            Compared to when you were disciplined, what has changed the most for you?
-          </p>
+/* Full-width tap rows (Apple-style) */
+.choice{
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  border-radius: 16px;
+  padding: 14px 14px;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+}
 
-          <label class="opt">
-            <input class="radio" type="checkbox" name="q1" value="consistency" />
-            <span>I no longer have the same consistency, even when I know what to do.</span>
-          </label>
+.choice:hover{
+  background: rgba(255,255,255,0.035);
+  border-color: rgba(255,255,255,0.12);
+}
 
-          <label class="opt">
-            <input class="radio" type="checkbox" name="q1" value="confidence" />
-            <span>I’ve lost the confidence that I’ll actually stick to it.</span>
-          </label>
+.choice:active{
+  transform: translateY(0);
+}
 
-          <label class="opt">
-            <input class="radio" type="checkbox" name="q1" value="mental_cost" />
-            <span>Moving forward costs me more mentally than it used to.</span>
-          </label>
+.choiceText{
+  font-size: 14.5px;
+  line-height: 1.35;
+  color: rgba(255,255,255,0.86);
+}
 
-          <label class="opt">
-            <input class="radio" type="checkbox" name="q1" value="identity" />
-            <span>I don’t fully recognize myself as the person I used to be.</span>
-          </label>
+/* Minimal “checkbox” indicator */
+.mark{
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: transparent;
+}
 
-          <label class="opt">
-            <input class="radio" type="checkbox" name="q1" value="other" />
-            <span>Other</span>
-          </label>
+.choice.isOn{
+  border-color: rgba(169,133,217,0.38);
+  background: rgba(169,133,217,0.09);
+}
 
-          <div class="actions row" style="justify-content: space-between; margin-top: 28px;">
-            <button type="button" class="ghost" onclick="history.back()">Back</button>
-            <button type="submit" class="btn">Continue</button>
-          </div>
+.choice.isOn .mark{
+  border-color: rgba(169,133,217,0.9);
+  background: rgba(169,133,217,1);
+}
 
-        </form>
+/* Actions: left + right extremes */
+.actions-split{
+  width: 100%;
+  justify-content: space-between !important;
+  margin-top: 22px;
+}
 
-      </section>
-    </main>
-
-    <script>
-      document.getElementById("q1Form").addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const values = [...document.querySelectorAll('input[name="q1"]:checked')]
-          .map(i => i.value);
-
-        if (!values.length) return;
-
-        localStorage.setItem("mn8_q1", JSON.stringify(values));
-        window.location.href = "q2.html";
-      });
-    </script>
-  </body>
-</html>
+.btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+}
