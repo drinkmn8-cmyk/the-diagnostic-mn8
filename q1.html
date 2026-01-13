@@ -3,118 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Diagnostic — Q1</title>
-    <link rel="stylesheet" href="assets/style.css?v=6" />
+    <title>Diagnostic · Q1 — MN8</title>
+    <link rel="stylesheet" href="assets/style.css?v=4" />
   </head>
 
   <body>
     <main class="wrap">
       <section class="card form-card" role="region" aria-label="Diagnostic Question 1">
+
+        <!-- Header -->
         <header class="header left">
           <div class="kicker">DIAGNOSTIC · Q1</div>
           <h1 class="title small">What changed most?</h1>
         </header>
 
-        <form id="q1Form" class="form" novalidate>
-          <!-- OPTIONS (no box, no divider) -->
-          <div class="options">
-            <label class="opt">
-              <input class="radio" type="radio" name="q1" value="consistency" />
-              <span>Consistency</span>
-            </label>
+        <!-- Question -->
+        <form class="form" id="q1Form">
+          <label class="opt">
+            <input class="radio" type="radio" name="q1" value="consistency" />
+            <span>I no longer have the same consistency, even when I know what to do.</span>
+          </label>
 
-            <label class="opt">
-              <input class="radio" type="radio" name="q1" value="confidence" />
-              <span>Confidence</span>
-            </label>
+          <label class="opt">
+            <input class="radio" type="radio" name="q1" value="confidence" />
+            <span>I’ve lost the confidence that I’ll actually stick to it.</span>
+          </label>
 
-            <label class="opt">
-              <input class="radio" type="radio" name="q1" value="mental_effort" />
-              <span>Mental effort</span>
-            </label>
+          <label class="opt">
+            <input class="radio" type="radio" name="q1" value="mental_effort" />
+            <span>Moving forward costs me more mentally than it used to.</span>
+          </label>
 
-            <label class="opt">
-              <input class="radio" type="radio" name="q1" value="identity" />
-              <span>Identity</span>
-            </label>
+          <label class="opt">
+            <input class="radio" type="radio" name="q1" value="identity" />
+            <span>I don’t fully recognize myself as the person I used to be.</span>
+          </label>
 
-            <label class="opt">
-              <input class="radio" type="radio" name="q1" value="other" />
-              <span>Other</span>
-            </label>
+          <label class="opt">
+            <input class="radio" type="radio" name="q1" value="other" />
+            <span>Other</span>
+          </label>
 
-            <!-- OTHER (reveals only if needed) -->
-            <div id="otherWrap" class="otherWrap">
-              <input
-                id="otherInput"
-                class="input otherInput"
-                type="text"
-                placeholder="Specify…"
-              />
-            </div>
-          </div>
-
-          <!-- ACTIONS -->
-          <div class="actions row q-actions">
-            <button class="ghost" type="button" id="backBtn">Back</button>
-            <button class="btn" id="continueBtn" type="submit" disabled>
-              Continue
-            </button>
+          <!-- Actions -->
+          <div class="actions row" style="justify-content: space-between; margin-top: 28px;">
+            <button type="button" class="ghost" id="backBtn">Back</button>
+            <button type="submit" class="btn" id="continueBtn" disabled>Continue</button>
           </div>
         </form>
       </section>
     </main>
 
     <script>
-      const PREV_PAGE = "diagnostic.html";
+      const BACK_PAGE = "diagnostic.html";
       const NEXT_PAGE = "q2.html";
 
       const form = document.getElementById("q1Form");
-      const backBtn = document.getElementById("backBtn");
+      const radios = document.querySelectorAll('input[name="q1"]');
       const continueBtn = document.getElementById("continueBtn");
-      const otherWrap = document.getElementById("otherWrap");
-      const otherInput = document.getElementById("otherInput");
+      const backBtn = document.getElementById("backBtn");
 
-      function selected() {
-        return document.querySelector('input[name="q1"]:checked');
-      }
-
-      function updateState() {
-        const v = selected()?.value;
-        const isOther = v === "other";
-
-        otherWrap.classList.toggle("show", isOther);
-
-        const ok =
-          !!v && (!isOther || otherInput.value.trim().length > 1);
-
-        continueBtn.disabled = !ok;
-      }
-
-      document.querySelectorAll('input[name="q1"]').forEach(r =>
-        r.addEventListener("change", updateState)
-      );
-      otherInput.addEventListener("input", updateState);
+      radios.forEach(radio => {
+        radio.addEventListener("change", () => {
+          continueBtn.disabled = false;
+        });
+      });
 
       backBtn.addEventListener("click", () => {
-        window.location.href = PREV_PAGE;
+        window.location.href = BACK_PAGE;
       });
 
-      form.addEventListener("submit", e => {
+      form.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (continueBtn.disabled) return;
+        const selected = document.querySelector('input[name="q1"]:checked');
+        if (!selected) return;
 
-        const payload = {
-          value: selected().value,
-          other: selected().value === "other" ? otherInput.value.trim() : "",
-          ts: Date.now()
-        };
-
-        localStorage.setItem("mn8_q1", JSON.stringify(payload));
+        localStorage.setItem("mn8_q1", selected.value);
         window.location.href = NEXT_PAGE;
       });
-
-      updateState();
     </script>
   </body>
 </html>
