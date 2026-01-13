@@ -1,77 +1,86 @@
-/* ===== Q PAGES — APPLE-LIKE HIERARCHY ===== */
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Diagnostic — Q1</title>
+    <link rel="stylesheet" href="assets/style.css?v=999" />
+  </head>
 
-.q-prompt{
-  margin: 0 0 14px;
-  font-size: 22px;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: rgba(255,255,255,0.94);
-}
+  <body>
+    <main class="wrap">
+      <section class="card qCard" role="region" aria-label="Diagnostic Question 1">
+        <form id="q1Form" class="qForm" novalidate>
+          <!-- ONE line only. No essay. -->
+          <h1 class="qPrompt">What changed the most?</h1>
 
-.choices{
-  display: grid;
-  gap: 10px;
-  margin-top: 8px;
-}
+          <!-- Apple-style selection rows -->
+          <div class="qList" role="radiogroup" aria-label="Question 1">
+            <button type="button" class="qRow" data-value="consistency" aria-checked="false">
+              <span class="qLabel">I’m not consistent anymore — even when I know what to do.</span>
+              <span class="qCheck" aria-hidden="true"></span>
+            </button>
 
-/* Full-width tap rows (Apple-style) */
-.choice{
-  width: 100%;
-  text-align: left;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
-  border-radius: 16px;
-  padding: 14px 14px;
-  display: grid;
-  grid-template-columns: 18px 1fr;
-  gap: 12px;
-  align-items: center;
-  cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
-}
+            <button type="button" class="qRow" data-value="confidence" aria-checked="false">
+              <span class="qLabel">I don’t trust myself to follow through.</span>
+              <span class="qCheck" aria-hidden="true"></span>
+            </button>
 
-.choice:hover{
-  background: rgba(255,255,255,0.035);
-  border-color: rgba(255,255,255,0.12);
-}
+            <button type="button" class="qRow" data-value="mental" aria-checked="false">
+              <span class="qLabel">Moving forward takes more mental effort than it used to.</span>
+              <span class="qCheck" aria-hidden="true"></span>
+            </button>
 
-.choice:active{
-  transform: translateY(0);
-}
+            <button type="button" class="qRow" data-value="identity" aria-checked="false">
+              <span class="qLabel">I don’t fully recognize who I am anymore.</span>
+              <span class="qCheck" aria-hidden="true"></span>
+            </button>
 
-.choiceText{
-  font-size: 14.5px;
-  line-height: 1.35;
-  color: rgba(255,255,255,0.86);
-}
+            <button type="button" class="qRow" data-value="other" aria-checked="false">
+              <span class="qLabel">Other</span>
+              <span class="qCheck" aria-hidden="true"></span>
+            </button>
+          </div>
 
-/* Minimal “checkbox” indicator */
-.mark{
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: transparent;
-}
+          <div class="qActions">
+            <button type="button" class="ghost" id="backBtn">Back</button>
+            <button type="submit" class="btn" id="continueBtn" disabled>Continue</button>
+          </div>
+        </form>
+      </section>
+    </main>
 
-.choice.isOn{
-  border-color: rgba(169,133,217,0.38);
-  background: rgba(169,133,217,0.09);
-}
+    <script>
+      const rows = Array.from(document.querySelectorAll(".qRow"));
+      const continueBtn = document.getElementById("continueBtn");
+      const backBtn = document.getElementById("backBtn");
+      const form = document.getElementById("q1Form");
 
-.choice.isOn .mark{
-  border-color: rgba(169,133,217,0.9);
-  background: rgba(169,133,217,1);
-}
+      let selected = null;
 
-/* Actions: left + right extremes */
-.actions-split{
-  width: 100%;
-  justify-content: space-between !important;
-  margin-top: 22px;
-}
+      function setSelected(btn) {
+        rows.forEach((r) => {
+          r.classList.remove("isOn");
+          r.setAttribute("aria-checked", "false");
+        });
+        btn.classList.add("isOn");
+        btn.setAttribute("aria-checked", "true");
+        selected = btn.dataset.value;
+        continueBtn.disabled = false;
+      }
 
-.btn:disabled{
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+      rows.forEach((btn) => {
+        btn.addEventListener("click", () => setSelected(btn));
+      });
+
+      backBtn.addEventListener("click", () => history.back());
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!selected) return;
+        localStorage.setItem("mn8_q1", selected);
+        window.location.href = "q2.html";
+      });
+    </script>
+  </body>
+</html>
