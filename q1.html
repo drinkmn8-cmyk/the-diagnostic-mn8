@@ -3,127 +3,117 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Q1 — The Diagnostic | MN8</title>
-    <link rel="stylesheet" href="assets/style.css?v=4" />
+    <title>Diagnostic — Q1</title>
+    <link rel="stylesheet" href="assets/style.css?v=5" />
   </head>
 
   <body>
     <main class="wrap">
-      <section class="card" role="region" aria-label="Diagnostic Question 1">
+      <section class="card form-card" role="region" aria-label="Diagnostic Question 1">
         <header class="header left">
-          <div class="kicker">DIAGNOSTIC · QUESTION 1</div>
-          <h1 class="title small">What has actually changed?</h1>
-          <p class="sub left">
-            This question is not about what you lack.  
-            It’s about what you’ve lost compared to when you were disciplined.
-          </p>
+          <div class="kicker">DIAGNOSTIC · Q1</div>
+          <h1 class="title small">What changed most?</h1>
         </header>
 
-        <form id="q1Form" class="form">
+        <form id="q1Form" class="form" novalidate>
           <div class="q">
-            <p class="q-title">
-              Compared to the period when you were disciplined, what has changed the most for you?
-            </p>
-
             <div class="options">
               <div class="opt">
-                <input class="radio" type="checkbox" id="q1a" value="lost_consistency" />
-                <label for="q1a">
-                  I no longer have the same consistency, even when I know what to do.
-                </label>
+                <input class="radio" type="radio" id="q1_a" name="q1" value="consistency" />
+                <label for="q1_a">Consistency</label>
               </div>
 
               <div class="opt">
-                <input class="radio" type="checkbox" id="q1b" value="lost_self_trust" />
-                <label for="q1b">
-                  I’ve lost the confidence that “I’ll actually stick to it.”
-                </label>
+                <input class="radio" type="radio" id="q1_b" name="q1" value="confidence" />
+                <label for="q1_b">Confidence</label>
               </div>
 
               <div class="opt">
-                <input class="radio" type="checkbox" id="q1c" value="mental_cost" />
-                <label for="q1c">
-                  Moving forward costs me more mentally than it used to.
-                </label>
+                <input class="radio" type="radio" id="q1_c" name="q1" value="mental_effort" />
+                <label for="q1_c">Mental effort</label>
               </div>
 
               <div class="opt">
-                <input class="radio" type="checkbox" id="q1d" value="identity_gap" />
-                <label for="q1d">
-                  I don’t fully recognize myself as the person I used to be.
-                </label>
+                <input class="radio" type="radio" id="q1_d" name="q1" value="identity" />
+                <label for="q1_d">Identity</label>
               </div>
 
               <div class="opt">
-                <input class="radio" type="checkbox" id="q1e" value="other" />
-                <label for="q1e">Other</label>
+                <input class="radio" type="radio" id="q1_e" name="q1" value="other" />
+                <label for="q1_e">Other</label>
               </div>
 
-              <div class="otherWrap" id="otherWrap">
-                <input
-                  class="input otherInput"
-                  type="text"
-                  id="otherText"
-                  placeholder="Specify what has changed…"
-                />
+              <div id="otherWrap" class="otherWrap">
+                <div class="field">
+                  <label class="label" for="q1_other">Specify</label>
+                  <input class="input otherInput" id="q1_other" type="text" placeholder="Type here…" />
+                </div>
               </div>
             </div>
           </div>
 
-<div class="actions row spread">
-  <button class="ghost" type="button" id="backBtn">Back</button>
-  <button id="continueBtn" class="btn" type="submit" disabled>Continue</button>
-</div>
+          <div class="actions row q-actions">
+            <button class="ghost" type="button" id="backBtn">Back</button>
+            <button id="continueBtn" class="btn" type="submit" disabled>Continue</button>
+          </div>
         </form>
-
-        <!-- French reference (not shown, for internal clarity / future toggle) -->
-        <!--
-        QUESTION DE BASE — PERTE RÉELLE
-        Fonction : identifier ce qui a été perdu (pas ce qui manque)
-
-        Qu’est-ce qui a le plus changé chez toi par rapport à la période où tu étais discipliné(e) ?
-
-        ☐ Je n’ai plus la même constance, même quand je sais quoi faire  
-        ☐ J’ai perdu la confiance que “je vais tenir”  
-        ☐ Avancer me coûte plus mentalement qu’avant  
-        ☐ Je me reconnais moins dans la personne que j’étais  
-        ☐ Autre (préciser)
-        -->
       </section>
     </main>
 
     <script>
+      const PREV_PAGE = "diagnostic.html";
+      const NEXT_PAGE = "q2.html"; // next step
+
       const backBtn = document.getElementById("backBtn");
+      const continueBtn = document.getElementById("continueBtn");
       const form = document.getElementById("q1Form");
-      const otherCheckbox = document.getElementById("q1e");
       const otherWrap = document.getElementById("otherWrap");
-      const otherText = document.getElementById("otherText");
+      const otherInput = document.getElementById("q1_other");
+
+      function selectedValue() {
+        const el = document.querySelector('input[name="q1"]:checked');
+        return el ? el.value : null;
+      }
+
+      function updateUI() {
+        const v = selectedValue();
+        const isOther = v === "other";
+
+        otherWrap.classList.toggle("show", isOther);
+
+        // continue enabled if selected + (if other, has text)
+        const ok =
+          !!v && (!isOther || (otherInput.value || "").trim().length > 1);
+
+        continueBtn.disabled = !ok;
+      }
+
+      document.querySelectorAll('input[name="q1"]').forEach((r) => {
+        r.addEventListener("change", updateUI);
+      });
+      otherInput.addEventListener("input", updateUI);
 
       backBtn.addEventListener("click", () => {
-        window.location.href = "diagnostic.html";
-      });
-
-      otherCheckbox.addEventListener("change", () => {
-        otherWrap.classList.toggle("show", otherCheckbox.checked);
+        window.location.href = PREV_PAGE;
       });
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
+        updateUI();
+        if (continueBtn.disabled) return;
 
-        const answers = [];
-        document
-          .querySelectorAll('input[type="checkbox"]:checked')
-          .forEach((cb) => answers.push(cb.value));
-
+        const v = selectedValue();
         const payload = {
-          q1: answers,
-          other: otherText.value.trim(),
+          value: v,
+          other: v === "other" ? otherInput.value.trim() : "",
           ts: Date.now(),
         };
 
         localStorage.setItem("mn8_q1", JSON.stringify(payload));
-        window.location.href = "q2.html";
+        window.location.href = NEXT_PAGE;
       });
+
+      updateUI();
     </script>
   </body>
 </html>
