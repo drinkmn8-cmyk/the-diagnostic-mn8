@@ -312,3 +312,106 @@ body {
   background: linear-gradient(135deg, var(--accent), rgba(60, 30, 89, 0.6));
   transition: width 0.35s ease;
 }
+/* ===== Apple-style question + options ===== */
+
+.q {
+  margin-top: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: grid;
+  gap: 12px;
+}
+
+.q-title {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+  margin: 0 2px;
+}
+
+/* Stack like iOS Settings */
+.options {
+  display: grid;
+  gap: 10px;
+}
+
+/* Hide the native radio */
+.opt input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The tile */
+.opt {
+  position: relative;
+}
+
+.opt label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  padding: 14px 16px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 1.35;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.opt label:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.opt label:active {
+  transform: translateY(1px);
+}
+
+/* Right-side indicator (Apple-ish) */
+.opt label::after {
+  content: "›";
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Selected state = clean, confident, premium */
+.opt input[type="radio"]:checked + label {
+  border-color: rgba(169, 133, 217, 0.65);
+  background: rgba(169, 133, 217, 0.10);
+  box-shadow: 0 0 0 3px rgba(99, 47, 150, 0.22);
+}
+
+/* Swap chevron to a checkmark on selected (better than chevron) */
+.opt input[type="radio"]:checked + label::after {
+  content: "✓";
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+}
+
+/* "Other" input reveal */
+.otherWrap {
+  margin-top: 10px;
+  margin-left: 0;
+  display: none;
+}
+
+.otherWrap.show {
+  display: block;
+}
+
+.otherInput {
+  margin-top: 10px;
+}
+
