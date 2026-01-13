@@ -3,82 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Diagnostic · Q1 — MN8</title>
-    <link rel="stylesheet" href="assets/style.css?v=4" />
+    <title>The Diagnostic — Q1</title>
+    <link rel="stylesheet" href="assets/style.css?v=3" />
   </head>
 
   <body>
     <main class="wrap">
-      <section class="card form-card" role="region" aria-label="Diagnostic Question 1">
+      <section class="card form-card">
 
-        <!-- Header -->
-        <header class="header left">
-          <div class="kicker">DIAGNOSTIC · Q1</div>
-          <h1 class="title small">What changed most?</h1>
-        </header>
-
-        <!-- Question -->
         <form class="form" id="q1Form">
+
+          <p class="q-title">
+            Compared to when you were disciplined, what has changed the most for you?
+          </p>
+
           <label class="opt">
-            <input class="radio" type="radio" name="q1" value="consistency" />
+            <input class="radio" type="checkbox" name="q1" value="consistency" />
             <span>I no longer have the same consistency, even when I know what to do.</span>
           </label>
 
           <label class="opt">
-            <input class="radio" type="radio" name="q1" value="confidence" />
+            <input class="radio" type="checkbox" name="q1" value="confidence" />
             <span>I’ve lost the confidence that I’ll actually stick to it.</span>
           </label>
 
           <label class="opt">
-            <input class="radio" type="radio" name="q1" value="mental_effort" />
+            <input class="radio" type="checkbox" name="q1" value="mental_cost" />
             <span>Moving forward costs me more mentally than it used to.</span>
           </label>
 
           <label class="opt">
-            <input class="radio" type="radio" name="q1" value="identity" />
+            <input class="radio" type="checkbox" name="q1" value="identity" />
             <span>I don’t fully recognize myself as the person I used to be.</span>
           </label>
 
           <label class="opt">
-            <input class="radio" type="radio" name="q1" value="other" />
+            <input class="radio" type="checkbox" name="q1" value="other" />
             <span>Other</span>
           </label>
 
-          <!-- Actions -->
           <div class="actions row" style="justify-content: space-between; margin-top: 28px;">
-            <button type="button" class="ghost" id="backBtn">Back</button>
-            <button type="submit" class="btn" id="continueBtn" disabled>Continue</button>
+            <button type="button" class="ghost" onclick="history.back()">Back</button>
+            <button type="submit" class="btn">Continue</button>
           </div>
+
         </form>
+
       </section>
     </main>
 
     <script>
-      const BACK_PAGE = "diagnostic.html";
-      const NEXT_PAGE = "q2.html";
-
-      const form = document.getElementById("q1Form");
-      const radios = document.querySelectorAll('input[name="q1"]');
-      const continueBtn = document.getElementById("continueBtn");
-      const backBtn = document.getElementById("backBtn");
-
-      radios.forEach(radio => {
-        radio.addEventListener("change", () => {
-          continueBtn.disabled = false;
-        });
-      });
-
-      backBtn.addEventListener("click", () => {
-        window.location.href = BACK_PAGE;
-      });
-
-      form.addEventListener("submit", (e) => {
+      document.getElementById("q1Form").addEventListener("submit", (e) => {
         e.preventDefault();
-        const selected = document.querySelector('input[name="q1"]:checked');
-        if (!selected) return;
 
-        localStorage.setItem("mn8_q1", selected.value);
-        window.location.href = NEXT_PAGE;
+        const values = [...document.querySelectorAll('input[name="q1"]:checked')]
+          .map(i => i.value);
+
+        if (!values.length) return;
+
+        localStorage.setItem("mn8_q1", JSON.stringify(values));
+        window.location.href = "q2.html";
       });
     </script>
   </body>
