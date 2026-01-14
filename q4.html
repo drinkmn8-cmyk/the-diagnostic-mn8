@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MN8 Diagnostic — Q4</title>
+
+  <!-- LATO -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --card:#0f0f14;
+      --hair:rgba(255,255,255,.08);
+
+      --text:rgba(255,255,255,.92);
+      --purpleBtn:#6a38a3;
+      --stroke:rgba(185,145,235,.55);
+
+      --radius:34px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 50% 0%, rgba(99,47,150,.45), rgba(99,47,150,0) 62%),
+        radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
+        var(--bg);
+      background-attachment:fixed;
+
+      color:var(--text);
+      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      display:grid;
+      place-items:center;
+      padding:28px 18px;
+    }
+
+    .card{
+      width:100%;
+      max-width:920px;
+      background:var(--card);
+      border:1px solid var(--hair);
+      border-radius:var(--radius);
+      padding:40px 46px 34px;
+      box-shadow:0 34px 160px rgba(0,0,0,.72);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-60px -80px auto -80px;
+      height:240px;
+      background:radial-gradient(closest-side, rgba(99,47,150,.18), rgba(99,47,150,0));
+      pointer-events:none;
+      filter:blur(2px);
+    }
+
+    .powered{
+      position:relative;
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:rgba(185,145,235,.72);
+      font-weight:500;
+      user-select:none;
+      margin-bottom:18px;
+    }
+    .powered sup{font-size:10px; opacity:.7}
+
+    h1{
+      position:relative;
+      margin:0;
+      font-size:34px;
+      line-height:1.25;
+      font-weight:700;
+      color:rgba(185,145,235,.92);
+      max-width:48ch;
+    }
+
+    .field{
+      position:relative;
+      margin-top:26px;
+    }
+
+    .input{
+      width:100%;
+      height:56px;
+      padding:0 18px;
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+      font-size:16px;
+      font-weight:500;
+    }
+    .input::placeholder{color:rgba(255,255,255,.40)}
+    .input:focus{
+      border-color:rgba(185,145,235,.82);
+      box-shadow:0 0 0 3px rgba(99,47,150,.25);
+    }
+
+    .actions{
+      position:relative;
+      margin-top:32px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+    }
+
+    /* Back pill (dark) like screenshot */
+    .btnBack{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      min-width:240px;
+      height:52px;
+      border-radius:20px;
+      background:rgba(0,0,0,.35);
+      color:rgba(185,145,235,.80);
+      font-weight:600;
+      font-size:16px;
+      letter-spacing:.02em;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+      transition:opacity .12s ease, transform .08s ease;
+    }
+    .btnBack:hover{opacity:.92}
+    .btnBack:active{transform:translateY(1px)}
+
+    /* Continue pill */
+    .btnGo{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      min-width:240px;
+      height:52px;
+      border-radius:20px;
+      background:var(--purpleBtn);
+      color:rgba(10,10,14,.92);
+      font-weight:700;
+      font-size:16px;
+      letter-spacing:.02em;
+      transition:opacity .12s ease, transform .08s ease;
+    }
+    .btnGo:hover{opacity:.92}
+    .btnGo:active{transform:translateY(1px)}
+    .btnGo:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    @media (max-width:640px){
+      .card{padding:34px 20px 26px}
+      h1{font-size:28px}
+      .actions{gap:12px}
+      .btnBack,.btnGo{min-width:0; flex:1}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="powered">POWERED BY MN8<sup>®</sup></div>
+
+    <h1>After a break, what stops you from resuming cleanly?</h1>
+
+    <div class="field">
+      <input class="input" id="q4" placeholder="Answer" autocomplete="off" maxlength="220" />
+    </div>
+
+    <div class="actions">
+      <button class="btnBack" id="backBtn">Back</button>
+      <button class="btnGo" id="continueBtn" disabled>Continue</button>
+    </div>
+  </main>
+
+  <script>
+    const q4 = document.getElementById("q4");
+    const backBtn = document.getElementById("backBtn");
+    const continueBtn = document.getElementById("continueBtn");
+
+    // Load saved
+    try{
+      const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
+      if(saved.q4_resume_blocker) q4.value = saved.q4_resume_blocker;
+    }catch{}
+
+    function sync(){
+      const val = q4.value.trim();
+      continueBtn.disabled = val.length === 0;
+
+      try{
+        const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
+        saved.q4_resume_blocker = val;
+        localStorage.setItem("mn8_diagnostic_answers", JSON.stringify(saved));
+      }catch{}
+    }
+
+    q4.addEventListener("input", sync);
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "q3.html";
+    });
+
+    continueBtn.addEventListener("click", () => {
+      if (continueBtn.disabled) return;
+      window.location.href = "q5.html";
+    });
+
+    sync();
+  </script>
+</body>
+</html>
