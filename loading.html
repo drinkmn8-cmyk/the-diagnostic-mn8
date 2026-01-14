@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MN8 Diagnostic — Analyzing</title>
+  <title>MN8 Diagnostic — Reviewing</title>
 
   <!-- LATO -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,8 +20,6 @@
       --muted:rgba(255,255,255,.55);
 
       --accent:#632f96;
-      --btn:#6a38a3;
-
       --radius:34px;
     }
 
@@ -136,36 +134,35 @@
       transition:width .35s ease;
     }
 
-    .foot{
-      margin-top:16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-    }
-
     .eta{
+      margin-top:12px;
       font-size:12px;
       color:rgba(255,255,255,.45);
     }
 
-    .skip{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.03);
-      color:rgba(185,145,235,.85);
-      padding:10px 14px;
-      border-radius:14px;
-      cursor:pointer;
-      font-size:13px;
-      font-weight:600;
-      transition:opacity .12s ease;
+    /* State switch */
+    .state{display:block}
+    .state.hidden{display:none}
+
+    /* Complete state styling */
+    .completeTitle{
+      margin:0;
+      font-size:28px;
+      line-height:1.2;
+      font-weight:700;
+      color:rgba(185,145,235,.92);
     }
-    .skip:hover{opacity:.92}
+    .completeMsg{
+      margin:14px 0 0;
+      color:rgba(255,255,255,.70);
+      font-size:14px;
+      line-height:1.55;
+      max-width:70ch;
+    }
 
     @media (max-width:640px){
       .card{padding:34px 20px 26px}
-      h1{font-size:24px}
+      h1,.completeTitle{font-size:24px}
     }
   </style>
 </head>
@@ -174,57 +171,81 @@
   <main class="card">
     <div class="powered">POWERED BY MN8<sup>®</sup></div>
 
-    <h1>Reviewing your responses…</h1>
-    <div class="sub">This may take up to 60 seconds.</div>
+    <!-- LOADING STATE -->
+    <section class="state" id="loadingState">
+      <h1>Reviewing your responses…</h1>
+      <div class="sub">This may take up to 60 seconds.</div>
 
-    <div class="panel">
-      <div class="lineTitle" id="loaderTitle">Analyzing patterns</div>
-      <div class="line" id="loaderLine">Reading your answers and mapping behavioral signals.</div>
+      <div class="panel">
+        <div class="lineTitle" id="loaderTitle">Analyzing patterns</div>
+        <div class="line" id="loaderLine">Reading your answers and mapping behavioral signals.</div>
 
-      <div class="progressWrap" aria-label="progress">
-        <div class="bar" id="bar"></div>
+        <div class="progressWrap" aria-label="progress">
+          <div class="bar" id="bar"></div>
+        </div>
+
+        <div class="eta" id="eta">0% — reviewing data</div>
       </div>
-    </div>
+    </section>
 
-    <div class="foot">
-      <div class="eta" id="eta">0% — preparing analysis</div>
-      <button class="skip" id="skipBtn" type="button">View results</button>
-    </div>
+    <!-- COMPLETE STATE (NO BUTTON) -->
+    <section class="state hidden" id="completeState">
+      <h2 class="completeTitle">Analysis complete.</h2>
+      <p class="completeMsg">
+        Your diagnostic summary is ready. Redirecting to your results…
+      </p>
+    </section>
   </main>
 
   <script>
-    // Where to go after loading:
+    // ✅ Adjust these
+    const DURATION_MS = 45000;      // progress hits 100% in ~45s
+    const REDIRECT_DELAY_MS = 1200; // pause after completion before switching page
     const NEXT_PAGE = "result.html";
-
-    // Total duration: ~60s (feel free to change)
-    const TOTAL_MS = 60000;
 
     const bar = document.getElementById("bar");
     const eta = document.getElementById("eta");
     const loaderTitle = document.getElementById("loaderTitle");
     const loaderLine = document.getElementById("loaderLine");
-    const skipBtn = document.getElementById("skipBtn");
+
+    const loadingState = document.getElementById("loadingState");
+    const completeState = document.getElementById("completeState");
 
     const steps = [
-      { t: 0,    title: "Analyzing patterns", line: "Reading your answers and mapping behavioral signals." },
-      { t: 8000, title: "Identifying resistance points", line: "Locating where momentum breaks and why it repeats." },
-      { t: 18000,title: "Checking consistency signals", line: "Comparing intent vs execution tendencies." },
-      { t: 30000,title: "Building your clarity summary", line: "Turning patterns into a direct diagnosis." },
-      { t: 45000,title: "Finalizing", line: "Preparing your result and recommendations." }
+      { t: 0,     title: "Analyzing patterns",          line: "Reading your answers and mapping behavioral signals." },
+      { t: 9000,  title: "Identifying resistance points",line: "Locating where momentum breaks and why it repeats." },
+      { t: 20000, title: "Checking consistency signals", line: "Comparing intent vs execution tendencies." },
+      { t: 32000, title: "Building your clarity summary",line: "Turning patterns into a direct diagnosis." },
+      { t: 41000, title: "Finalizing",                  line: "Preparing your result and recommendations." }
     ];
 
     let start = Date.now();
     let lastStepIndex = -1;
+    let finished = false;
 
-    const tick = () => {
+    function setComplete(){
+      if (finished) return;
+      finished = true;
+
+      // Switch states
+      loadingState.classList.add("hidden");
+      completeState.classList.remove("hidden");
+
+      // Redirect automatically (no button)
+      setTimeout(() => {
+        window.location.href = NEXT_PAGE;
+      }, REDIRECT_DELAY_MS);
+    }
+
+    function tick(){
       const elapsed = Date.now() - start;
-      const p = Math.min(1, elapsed / TOTAL_MS);
+      const p = Math.min(1, elapsed / DURATION_MS);
       const pct = Math.round(p * 100);
 
       bar.style.width = pct + "%";
       eta.textContent = `${pct}% — reviewing data`;
 
-      // update messages
+      // Step messages
       for (let i = steps.length - 1; i >= 0; i--) {
         if (elapsed >= steps[i].t) {
           if (i !== lastStepIndex) {
@@ -236,17 +257,13 @@
         }
       }
 
-      if (elapsed >= TOTAL_MS) {
-        window.location.href = NEXT_PAGE;
+      if (pct >= 100) {
+        setComplete();
         return;
       }
 
       requestAnimationFrame(tick);
-    };
-
-    skipBtn.addEventListener("click", () => {
-      window.location.href = NEXT_PAGE;
-    });
+    }
 
     tick();
   </script>
