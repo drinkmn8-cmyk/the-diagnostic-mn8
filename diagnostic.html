@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MN8 Diagnostic — Intro</title>
+  <title>MN8 Diagnostic — Consent</title>
 
   <style>
     :root {
@@ -45,9 +45,8 @@
       background: var(--card);
       border: 1px solid var(--hair);
       border-radius: var(--radius);
-      padding: 44px 42px 38px;
+      padding: 38px 42px 30px;
       box-shadow: 0 30px 110px rgba(0, 0, 0, 0.62);
-      text-align: center;
     }
 
     .powered {
@@ -59,47 +58,120 @@
       user-select: none;
     }
 
-    .title {
-      margin: 0;
-      font-size: clamp(44px, 5.2vw, 72px);
-      letter-spacing: 0.08em;
-      font-weight: 720;
-      color: rgba(255, 255, 255, 0.92);
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 780px) {
+      .grid2 { grid-template-columns: 1fr 1fr; }
     }
 
-    .sub {
-      margin: 16px auto 0;
-      max-width: 62ch;
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      line-height: 1.55;
-      color: rgba(255, 255, 255, 0.62);
+    .input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(185, 145, 235, 0.55);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input::placeholder { color: rgba(255, 255, 255, 0.38); }
+
+    .input:focus {
+      border-color: rgba(185, 145, 235, 0.82);
+      box-shadow: 0 0 0 3px rgba(99, 47, 150, 0.25);
+    }
+
+    /* Custom checkbox square (matches your screenshots) */
+    .box {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid rgba(185, 145, 235, 0.65);
+      background: rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      position: relative;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+    .box:checked {
+      background: rgba(185, 145, 235, 0.22);
+      border-color: rgba(185, 145, 235, 0.85);
+      box-shadow: 0 0 0 3px rgba(99, 47, 150, 0.22);
+    }
+    .box:checked::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.92);
+      border-top: 0;
+      border-left: 0;
+      transform: rotate(45deg);
+    }
+
+    .consent {
+      margin-top: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 12.5px;
+      line-height: 1.45;
+      max-width: 78ch;
     }
 
     .actions {
-      margin-top: 28px;
-      display: grid;
-      place-items: center;
+      margin-top: 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
     }
 
-    .start {
+    .btn {
       appearance: none;
       border: 0;
       border-radius: 18px;
-      padding: 14px 26px;
-      min-width: 280px;
-      background: var(--btn);
-      color: rgba(10, 10, 14, 0.92);
+      padding: 14px 22px;
+      min-width: 220px;
       font-weight: 650;
-      font-size: 18px;
       cursor: pointer;
       transition: opacity 0.12s ease, transform 0.08s ease;
-      text-transform: lowercase;
+      font-size: 16px;
+    }
+    .btn:active { transform: translateY(1px); }
+
+    .btn.primary {
+      background: var(--btn);
+      color: rgba(10, 10, 14, 0.92);
+    }
+    .btn.primary:hover { opacity: 0.92; }
+    .btn.primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
-    .start:hover { opacity: 0.92; }
-    .start:active { transform: translateY(1px); }
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(185, 145, 235, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      min-width: 180px;
+    }
+    .btn.ghost:hover { border-color: rgba(255, 255, 255, 0.18); }
+
+    .hint {
+      margin-top: 10px;
+      color: rgba(255,255,255,0.38);
+      font-size: 12px;
+    }
   </style>
 </head>
 
@@ -107,24 +179,83 @@
   <main class="card">
     <div class="powered">POWERED BY MN8<sup style="font-size:10px; opacity:.65;">®</sup></div>
 
-    <h1 class="title">THE DIAGNOSTIC</h1>
+    <div class="grid2">
+      <input class="input" id="firstName" placeholder="First name" autocomplete="given-name" />
+      <input class="input" id="lastName" placeholder="Last name" autocomplete="family-name" />
+    </div>
 
-    <p class="sub">
-      A PRIVATE DIAGNOSTIC DESIGNED TO IDENTIFY WHY MOVING FORWARD<br>
-      REQUIRES MORE EFFORT THAN IT USED TO.
-    </p>
+    <div style="margin-top:16px;">
+      <input class="input" id="email" placeholder="Email" autocomplete="email" inputmode="email" />
+      <div class="hint" id="emailHint" style="display:none;">Enter a valid email.</div>
+    </div>
+
+    <div class="consent">
+      <input class="box" id="consent" type="checkbox" />
+      <div>
+        By continuing, you agree to receive your diagnostic by email and occasional MN8 updates.
+        You can unsubscribe anytime.
+      </div>
+    </div>
 
     <div class="actions">
-      <button class="start" id="startBtn">start</button>
+      <button class="btn ghost" id="backBtn">Back</button>
+      <button class="btn primary" id="continueBtn" disabled>Continue</button>
     </div>
   </main>
 
   <script>
-    document.getElementById("startBtn").addEventListener("click", () => {
-      // Replace this with your navigation logic
-      // Example: window.location.href = "form.html";
-      alert("Start clicked — wire this to your next page.");
+    const firstName = document.getElementById("firstName");
+    const lastName = document.getElementById("lastName");
+    const email = document.getElementById("email");
+    const consent = document.getElementById("consent");
+    const continueBtn = document.getElementById("continueBtn");
+    const backBtn = document.getElementById("backBtn");
+    const emailHint = document.getElementById("emailHint");
+
+    function isValidEmail(v) {
+      // Simple, strict enough for UI gating
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+    }
+
+    function update() {
+      const fn = firstName.value.trim();
+      const ln = lastName.value.trim();
+      const em = email.value.trim();
+      const okEmail = isValidEmail(em);
+
+      emailHint.style.display = em.length && !okEmail ? "block" : "none";
+
+      const canContinue = fn.length > 0 && ln.length > 0 && okEmail && consent.checked;
+      continueBtn.disabled = !canContinue;
+    }
+
+    [firstName, lastName, email].forEach(el => el.addEventListener("input", update));
+    consent.addEventListener("change", update);
+
+    backBtn.addEventListener("click", () => {
+      // Replace with your navigation
+      // Example: window.location.href = "intro.html";
+      history.back();
     });
+
+    continueBtn.addEventListener("click", () => {
+      if (continueBtn.disabled) return;
+
+      // Store (optional)
+      const payload = {
+        firstName: firstName.value.trim(),
+        lastName: lastName.value.trim(),
+        email: email.value.trim(),
+        consent: consent.checked
+      };
+      localStorage.setItem("mn8_diagnostic_user", JSON.stringify(payload));
+
+      // Navigate to next screen
+      // Example: window.location.href = "q1.html";
+      alert("Continue — wire to next page (Q1).");
+    });
+
+    update();
   </script>
 </body>
 </html>
