@@ -1,86 +1,194 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Diagnostic — Q1</title>
-    <link rel="stylesheet" href="assets/style.css?v=999" />
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MN8 Diagnostic — Q1</title>
 
-  <body>
-    <main class="wrap">
-      <section class="card qCard" role="region" aria-label="Diagnostic Question 1">
-        <form id="q1Form" class="qForm" novalidate>
-          <!-- ONE line only. No essay. -->
-          <h1 class="qPrompt">What changed the most?</h1>
+  <!-- LATO FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 
-          <!-- Apple-style selection rows -->
-          <div class="qList" role="radiogroup" aria-label="Question 1">
-            <button type="button" class="qRow" data-value="consistency" aria-checked="false">
-              <span class="qLabel">I’m not consistent anymore — even when I know what to do.</span>
-              <span class="qCheck" aria-hidden="true"></span>
-            </button>
+  <style>
+    :root {
+      --bg:#000000;
+      --card:#0f0f14;
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --hair:rgba(255,255,255,.10);
 
-            <button type="button" class="qRow" data-value="confidence" aria-checked="false">
-              <span class="qLabel">I don’t trust myself to follow through.</span>
-              <span class="qCheck" aria-hidden="true"></span>
-            </button>
+      --btn:#6a38a3;
+      --radius:28px;
+    }
 
-            <button type="button" class="qRow" data-value="mental" aria-checked="false">
-              <span class="qLabel">Moving forward takes more mental effort than it used to.</span>
-              <span class="qCheck" aria-hidden="true"></span>
-            </button>
+    *{box-sizing:border-box}
+    html,body{height:100%}
 
-            <button type="button" class="qRow" data-value="identity" aria-checked="false">
-              <span class="qLabel">I don’t fully recognize who I am anymore.</span>
-              <span class="qCheck" aria-hidden="true"></span>
-            </button>
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 50% 0%, rgba(99,47,150,.45), rgba(99,47,150,0) 62%),
+        radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
+        var(--bg);
+      background-attachment:fixed;
+      color:var(--text);
+      font-family:'Lato',sans-serif;
+      display:grid;
+      place-items:center;
+      padding:28px 18px;
+    }
 
-            <button type="button" class="qRow" data-value="other" aria-checked="false">
-              <span class="qLabel">Other</span>
-              <span class="qCheck" aria-hidden="true"></span>
-            </button>
-          </div>
+    .card{
+      width:100%;
+      max-width:920px;
+      background:var(--card);
+      border:1px solid var(--hair);
+      border-radius:var(--radius);
+      padding:38px 42px 30px;
+      box-shadow:0 30px 110px rgba(0,0,0,.62);
+    }
 
-          <div class="qActions">
-            <button type="button" class="ghost" id="backBtn">Back</button>
-            <button type="submit" class="btn" id="continueBtn" disabled>Continue</button>
-          </div>
-        </form>
-      </section>
-    </main>
+    .powered{
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.45);
+      margin-bottom:18px;
+      font-weight:500;
+      user-select:none;
+    }
 
-    <script>
-      const rows = Array.from(document.querySelectorAll(".qRow"));
-      const continueBtn = document.getElementById("continueBtn");
-      const backBtn = document.getElementById("backBtn");
-      const form = document.getElementById("q1Form");
+    .qTitle{
+      margin:0;
+      font-size:clamp(28px,3.2vw,42px);
+      line-height:1.12;
+      font-weight:700;
+      color:rgba(185,145,235,.92);
+    }
 
-      let selected = null;
+    .sub{
+      margin:12px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+      max-width:72ch;
+    }
 
-      function setSelected(btn) {
-        rows.forEach((r) => {
-          r.classList.remove("isOn");
-          r.setAttribute("aria-checked", "false");
-        });
-        btn.classList.add("isOn");
-        btn.setAttribute("aria-checked", "true");
-        selected = btn.dataset.value;
-        continueBtn.disabled = false;
-      }
+    .input{
+      width:100%;
+      margin-top:18px;
+      padding:16px 16px;
+      border-radius:16px;
+      border:1px solid rgba(185,145,235,.55);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+      font-size:16px;
+    }
+    .input::placeholder{color:rgba(255,255,255,.38)}
+    .input:focus{
+      border-color:rgba(185,145,235,.82);
+      box-shadow:0 0 0 3px rgba(99,47,150,.25);
+    }
 
-      rows.forEach((btn) => {
-        btn.addEventListener("click", () => setSelected(btn));
-      });
+    .actions{
+      margin-top:26px;
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+    }
 
-      backBtn.addEventListener("click", () => history.back());
+    .btn{
+      border-radius:18px;
+      padding:14px 22px;
+      min-width:220px;
+      font-weight:700;
+      font-size:16px;
+      cursor:pointer;
+      border:0;
+      transition:opacity .12s ease, transform .08s ease;
+    }
+    .btn:active{transform:translateY(1px)}
 
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (!selected) return;
-        localStorage.setItem("mn8_q1", selected);
-        window.location.href = "q2.html";
-      });
-    </script>
-  </body>
+    .btn.ghost{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(185,145,235,.85);
+      min-width:180px;
+    }
+
+    .btn.primary{
+      background:var(--btn);
+      color:rgba(10,10,14,.92);
+    }
+    .btn.primary:hover{opacity:.92}
+    .btn.primary:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="powered">POWERED BY MN8<sup style="font-size:10px;opacity:.65;">®</sup></div>
+
+    <h1 class="qTitle">When you make a commitment to yourself now, what usually happens next?</h1>
+    <p class="sub">Keep it simple. One sentence is enough.</p>
+
+    <input
+      class="input"
+      id="q1"
+      placeholder="Answer"
+      autocomplete="off"
+      maxlength="180"
+    />
+
+    <div class="actions">
+      <button class="btn ghost" id="backBtn">Back</button>
+      <button class="btn primary" id="continueBtn" disabled>Continue</button>
+    </div>
+  </main>
+
+  <script>
+    const q1 = document.getElementById("q1");
+    const backBtn = document.getElementById("backBtn");
+    const continueBtn = document.getElementById("continueBtn");
+
+    // Load saved answer if it exists
+    try {
+      const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
+      if (saved.q1_commitment) q1.value = saved.q1_commitment;
+    } catch {}
+
+    function update() {
+      const val = q1.value.trim();
+      continueBtn.disabled = val.length === 0;
+
+      // Save continuously (simple + reliable)
+      try {
+        const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
+        saved.q1_commitment = val;
+        localStorage.setItem("mn8_diagnostic_answers", JSON.stringify(saved));
+      } catch {}
+    }
+
+    q1.addEventListener("input", update);
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "diagnostic.html";
+    });
+
+    continueBtn.addEventListener("click", () => {
+      if (continueBtn.disabled) return;
+      // go next
+      window.location.href = "q2.html";
+    });
+
+    update();
+  </script>
+</body>
 </html>
