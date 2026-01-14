@@ -20,7 +20,6 @@
 
       --accent: #632f96;
       --btn: #6a38a3;
-
       --radius: 28px;
     }
 
@@ -34,11 +33,9 @@
         radial-gradient(900px 520px at 50% 0%, rgba(99, 47, 150, 0.45), rgba(99, 47, 150, 0) 62%),
         radial-gradient(760px 420px at 50% 18%, rgba(99, 47, 150, 0.18), rgba(99, 47, 150, 0) 70%),
         var(--bg);
-      background-repeat: no-repeat;
       background-attachment: fixed;
-
       color: var(--text);
-      font-family: 'Lato', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-family: 'Lato', sans-serif;
       display: grid;
       place-items: center;
       padding: 28px 18px;
@@ -61,7 +58,6 @@
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.45);
       margin-bottom: 22px;
-      user-select: none;
       font-weight: 500;
     }
 
@@ -70,7 +66,6 @@
       font-size: clamp(44px, 5.2vw, 72px);
       letter-spacing: 0.08em;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.92);
     }
 
     .sub {
@@ -80,8 +75,7 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       line-height: 1.55;
-      color: rgba(255, 255, 255, 0.62);
-      font-weight: 400;
+      color: var(--muted);
     }
 
     .actions {
@@ -90,9 +84,9 @@
       place-items: center;
     }
 
+    /* Button styled link */
     .start {
-      appearance: none;
-      border: 0;
+      display: inline-block;
       border-radius: 18px;
       padding: 14px 26px;
       min-width: 280px;
@@ -100,10 +94,9 @@
       color: rgba(10, 10, 14, 0.92);
       font-weight: 700;
       font-size: 18px;
-      cursor: pointer;
-      transition: opacity 0.12s ease, transform 0.08s ease;
       text-transform: lowercase;
-      font-family: 'Lato', sans-serif;
+      text-decoration: none;
+      transition: opacity 0.12s ease, transform 0.08s ease;
     }
 
     .start:hover { opacity: 0.92; }
@@ -125,14 +118,8 @@
     </p>
 
     <div class="actions">
-      <button class="start" id="startBtn">start</button>
+      <a href="diagnostic.html" class="start">start</a>
     </div>
   </main>
-
-  <script>
-    document.getElementById("startBtn").addEventListener("click", () => {
-      window.location.href = "diagnostic.html";
-    });
-  </script>
 </body>
 </html>
