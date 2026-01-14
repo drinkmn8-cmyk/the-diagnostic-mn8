@@ -11,15 +11,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 
   <style>
-    :root {
+    :root{
       --bg:#000000;
       --card:#0f0f14;
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
       --hair:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.52);
 
-      --btn:#6a38a3;
-      --radius:28px;
+      --purple:#632f96;
+      --purpleBtn:#6a38a3;
+
+      --radius:32px;
     }
 
     *{box-sizing:border-box}
@@ -34,7 +36,7 @@
         var(--bg);
       background-attachment:fixed;
       color:var(--text);
-      font-family:'Lato',sans-serif;
+      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       display:grid;
       place-items:center;
       padding:28px 18px;
@@ -46,110 +48,139 @@
       background:var(--card);
       border:1px solid var(--hair);
       border-radius:var(--radius);
-      padding:38px 42px 30px;
-      box-shadow:0 30px 110px rgba(0,0,0,.62);
+      padding:40px 46px 34px;
+      box-shadow:0 34px 140px rgba(0,0,0,.72);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* subtle internal glow like screenshot */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-40px -60px auto -60px;
+      height:220px;
+      background:radial-gradient(closest-side, rgba(99,47,150,.20), rgba(99,47,150,0));
+      pointer-events:none;
+      filter:blur(2px);
     }
 
     .powered{
+      position:relative;
       font-size:12px;
       letter-spacing:.16em;
       text-transform:uppercase;
-      color:rgba(255,255,255,.45);
-      margin-bottom:18px;
+      color:rgba(185,145,235,.72);
       font-weight:500;
+      margin-bottom:18px;
       user-select:none;
     }
+    .powered sup{font-size:10px; opacity:.7}
 
-    .qTitle{
+    h1{
+      position:relative;
       margin:0;
-      font-size:clamp(28px,3.2vw,42px);
-      line-height:1.12;
+      font-size:34px;
+      line-height:1.25;
       font-weight:700;
-      color:rgba(185,145,235,.92);
+      color:rgba(185,145,235,.92); /* screenshot purple title */
+      max-width:36ch;
     }
 
-    .sub{
-      margin:12px 0 0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.55;
-      max-width:72ch;
+    .field{
+      position:relative;
+      margin-top:26px;
     }
 
     .input{
       width:100%;
-      margin-top:18px;
-      padding:16px 16px;
-      border-radius:16px;
+      height:56px;
+      padding:0 18px;
+      border-radius:18px;
       border:1px solid rgba(185,145,235,.55);
       background:rgba(255,255,255,.03);
       color:var(--text);
       outline:none;
       font-size:16px;
     }
-    .input::placeholder{color:rgba(255,255,255,.38)}
+    .input::placeholder{color:rgba(255,255,255,.40)}
     .input:focus{
       border-color:rgba(185,145,235,.82);
       box-shadow:0 0 0 3px rgba(99,47,150,.25);
     }
 
     .actions{
-      margin-top:26px;
+      position:relative;
+      margin-top:32px;
       display:flex;
       justify-content:space-between;
-      gap:14px;
       align-items:center;
+      gap:16px;
     }
 
-    .btn{
-      border-radius:18px;
-      padding:14px 22px;
-      min-width:220px;
-      font-weight:700;
-      font-size:16px;
-      cursor:pointer;
+    /* Back pill (dark) */
+    .btnBack{
+      appearance:none;
       border:0;
+      cursor:pointer;
+      min-width:240px;
+      height:52px;
+      border-radius:20px;
+      background:rgba(0,0,0,.35);
+      color:rgba(185,145,235,.80);
+      font-weight:600;
+      font-size:16px;
+      letter-spacing:.02em;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
       transition:opacity .12s ease, transform .08s ease;
     }
-    .btn:active{transform:translateY(1px)}
+    .btnBack:hover{opacity:.92}
+    .btnBack:active{transform:translateY(1px)}
 
-    .btn.ghost{
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.10);
-      color:rgba(185,145,235,.85);
-      min-width:180px;
-    }
-
-    .btn.primary{
-      background:var(--btn);
+    /* Continue pill (purple) */
+    .btnGo{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      min-width:240px;
+      height:52px;
+      border-radius:20px;
+      background:var(--purpleBtn);
       color:rgba(10,10,14,.92);
+      font-weight:700;
+      font-size:16px;
+      letter-spacing:.02em;
+      transition:opacity .12s ease, transform .08s ease;
     }
-    .btn.primary:hover{opacity:.92}
-    .btn.primary:disabled{
+    .btnGo:hover{opacity:.92}
+    .btnGo:active{transform:translateY(1px)}
+    .btnGo:disabled{
       opacity:.45;
       cursor:not-allowed;
+    }
+
+    @media (max-width:640px){
+      .card{padding:34px 20px 26px}
+      h1{font-size:28px}
+      .actions{gap:12px}
+      .btnBack,.btnGo{min-width:0; flex:1}
     }
   </style>
 </head>
 
 <body>
   <main class="card">
-    <div class="powered">POWERED BY MN8<sup style="font-size:10px;opacity:.65;">®</sup></div>
+    <div class="powered">POWERED BY MN8<sup>®</sup></div>
 
-    <h1 class="qTitle">When you make a commitment to yourself now, what usually happens next?</h1>
-    <p class="sub">Keep it simple. One sentence is enough.</p>
+    <h1>When you make a commitment to yourself now, what usually happens next?</h1>
 
-    <input
-      class="input"
-      id="q1"
-      placeholder="Answer"
-      autocomplete="off"
-      maxlength="180"
-    />
+    <div class="field">
+      <input class="input" id="q1" placeholder="Answer" autocomplete="off" maxlength="180" />
+    </div>
 
     <div class="actions">
-      <button class="btn ghost" id="backBtn">Back</button>
-      <button class="btn primary" id="continueBtn" disabled>Continue</button>
+      <button class="btnBack" id="backBtn">Back</button>
+      <button class="btnGo" id="continueBtn" disabled>Continue</button>
     </div>
   </main>
 
@@ -158,37 +189,35 @@
     const backBtn = document.getElementById("backBtn");
     const continueBtn = document.getElementById("continueBtn");
 
-    // Load saved answer if it exists
-    try {
+    // Load saved answer
+    try{
       const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
-      if (saved.q1_commitment) q1.value = saved.q1_commitment;
-    } catch {}
+      if(saved.q1_commitment) q1.value = saved.q1_commitment;
+    }catch{}
 
-    function update() {
+    function sync(){
       const val = q1.value.trim();
       continueBtn.disabled = val.length === 0;
 
-      // Save continuously (simple + reliable)
-      try {
+      try{
         const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
         saved.q1_commitment = val;
         localStorage.setItem("mn8_diagnostic_answers", JSON.stringify(saved));
-      } catch {}
+      }catch{}
     }
 
-    q1.addEventListener("input", update);
+    q1.addEventListener("input", sync);
 
     backBtn.addEventListener("click", () => {
       window.location.href = "diagnostic.html";
     });
 
     continueBtn.addEventListener("click", () => {
-      if (continueBtn.disabled) return;
-      // go next
+      if(continueBtn.disabled) return;
       window.location.href = "q2.html";
     });
 
-    update();
+    sync();
   </script>
 </body>
 </html>
