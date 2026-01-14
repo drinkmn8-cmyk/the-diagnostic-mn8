@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MN8 Diagnostic — Q5</title>
+
+  <!-- LATO -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#000;
+      --card:#0f0f14;
+      --hair:rgba(255,255,255,.08);
+
+      --text:rgba(255,255,255,.92);
+      --purpleBtn:#6a38a3;
+
+      --radius:34px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 50% 0%, rgba(99,47,150,.45), rgba(99,47,150,0) 62%),
+        radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
+        var(--bg);
+      background-attachment:fixed;
+
+      color:var(--text);
+      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      display:grid;
+      place-items:center;
+      padding:28px 18px;
+    }
+
+    .card{
+      width:100%;
+      max-width:920px;
+      background:var(--card);
+      border:1px solid var(--hair);
+      border-radius:var(--radius);
+      padding:40px 46px 34px;
+      box-shadow:0 34px 160px rgba(0,0,0,.72);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-60px -80px auto -80px;
+      height:240px;
+      background:radial-gradient(closest-side, rgba(99,47,150,.18), rgba(99,47,150,0));
+      pointer-events:none;
+      filter:blur(2px);
+    }
+
+    .powered{
+      position:relative;
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:rgba(185,145,235,.72);
+      font-weight:500;
+      user-select:none;
+      margin-bottom:18px;
+    }
+    .powered sup{font-size:10px; opacity:.7}
+
+    h1{
+      position:relative;
+      margin:0 0 18px 0;
+      font-size:34px;
+      line-height:1.22;
+      font-weight:700;
+      color:rgba(185,145,235,.92);
+      max-width:46ch;
+    }
+
+    .list{
+      position:relative;
+      display:grid;
+      gap:14px;
+      margin-top:10px;
+    }
+
+    .opt{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      font-size:22px;
+      line-height:1.25;
+      font-weight:500;
+      color:rgba(255,255,255,.92);
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .box{
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:3px;
+      border:1px solid rgba(185,145,235,.65);
+      background:rgba(255,255,255,.02);
+      cursor:pointer;
+      position:relative;
+      flex:0 0 auto;
+      margin-top:3px;
+    }
+    .box:checked{
+      background:rgba(185,145,235,.55);
+      border-color:rgba(185,145,235,.75);
+    }
+
+    .actions{
+      position:relative;
+      margin-top:28px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .back{
+      appearance:none;
+      border:0;
+      background:transparent;
+      color:rgba(185,145,235,.78);
+      font-size:18px;
+      font-weight:500;
+      cursor:pointer;
+      padding:10px 12px;
+      border-radius:14px;
+      transition:opacity .12s ease;
+    }
+    .back:hover{opacity:.9}
+
+    .continue{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      min-width:260px;
+      height:54px;
+      border-radius:20px;
+      background:var(--purpleBtn);
+      color:rgba(10,10,14,.92);
+      font-size:18px;
+      font-weight:700;
+      transition:opacity .12s ease, transform .08s ease;
+    }
+    .continue:hover{opacity:.92}
+    .continue:active{transform:translateY(1px)}
+    .continue:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    @media (max-width:640px){
+      .card{padding:34px 20px 26px}
+      h1{font-size:28px}
+      .opt{font-size:18px}
+      .continue{min-width:200px}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="powered">POWERED BY MN8<sup>®</sup></div>
+
+    <h1>Which feels more accurate right now?</h1>
+
+    <div class="list">
+      <label class="opt">
+        <input class="box" type="checkbox" name="q5" value="I know what to do, but don’t engage fully">
+        <span>“I know what to do, but don’t engage fully”</span>
+      </label>
+
+      <label class="opt">
+        <input class="box" type="checkbox" name="q5" value="I engage, but without belief">
+        <span>“I engage, but without belief”</span>
+      </label>
+
+      <label class="opt">
+        <input class="box" type="checkbox" name="q5" value="I avoid engagement altogether">
+        <span>“I avoid engagement altogether”</span>
+      </label>
+
+      <label class="opt">
+        <input class="box" type="checkbox" name="q5" value="I oscillate between effort and shutdown">
+        <span>“I oscillate between effort and shutdown”</span>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="back" id="backBtn">Back</button>
+      <button class="continue" id="continueBtn" disabled>Continue</button>
+    </div>
+  </main>
+
+  <script>
+    const backBtn = document.getElementById("backBtn");
+    const continueBtn = document.getElementById("continueBtn");
+    const boxes = Array.from(document.querySelectorAll('input[name="q5"]'));
+
+    // Load saved
+    try{
+      const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
+      if (saved.q5_current_pattern) {
+        boxes.forEach(b => b.checked = (b.value === saved.q5_current_pattern));
+      }
+    }catch{}
+
+    function sync(){
+      const selected = boxes.find(b => b.checked);
+      continueBtn.disabled = !selected;
+
+      try{
+        const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
+        saved.q5_current_pattern = selected ? selected.value : "";
+        localStorage.setItem("mn8_diagnostic_answers", JSON.stringify(saved));
+      }catch{}
+    }
+
+    // Single-select behavior
+    boxes.forEach(box => {
+      box.addEventListener("change", () => {
+        if (box.checked) boxes.forEach(b => { if (b !== box) b.checked = false; });
+        sync();
+      });
+    });
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "q4.html";
+    });
+
+    continueBtn.addEventListener("click", () => {
+      if (continueBtn.disabled) return;
+      window.location.href = "result.html";
+    });
+
+    sync();
+  </script>
+</body>
+</html>
