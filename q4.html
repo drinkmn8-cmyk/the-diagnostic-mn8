@@ -183,48 +183,45 @@
     </div>
   </main>
 
-  <script>
-    const STORAGE_KEY = "mn8_answers";
-    const KEY  = "q4";
-    const NEXT = "q5.html";
+<script>
+  const STORAGE_KEY = "mn8_answers";
+  const KEY = "q4";
+  const NEXT = "q5.html";
 
-    const input = document.getElementById("q4"); // ✅ FIXED
-    const continueBtn = document.getElementById("continueBtn");
-    const backBtn = document.getElementById("backBtn");
+  const input = document.getElementById("q4");
+  const continueBtn = document.getElementById("continueBtn");
+  const backBtn = document.getElementById("backBtn");
 
-    function getAnswers() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-      catch { return {}; }
-    }
+  function getAnswers() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch { return {}; }
+  }
+  function setAnswers(obj) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  }
 
-    function setAnswers(next) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    }
+  const existing = getAnswers();
+  if (existing[KEY]) input.value = existing[KEY];
 
-    // prefill
-    const existing = getAnswers();
-    if (existing[KEY]) input.value = existing[KEY];
+  function updateUI() {
+    continueBtn.disabled = input.value.trim().length === 0;
+  }
 
-    function updateUI() {
-      continueBtn.disabled = input.value.trim().length === 0;
-    }
+  input.addEventListener("input", updateUI);
+  backBtn.addEventListener("click", () => history.back());
 
-    input.addEventListener("input", updateUI);
+  continueBtn.addEventListener("click", () => {
+    const val = input.value.trim();
+    if (!val) return;
 
-    backBtn.addEventListener("click", () => history.back());
+    const answers = getAnswers();
+    answers[KEY] = val;
+    setAnswers(answers);
 
-    continueBtn.addEventListener("click", () => {
-      const val = input.value.trim();
-      if (!val) return;
+    window.location.href = NEXT;
+  });
 
-      const answers = getAnswers();
-      answers[KEY] = val;
-      setAnswers(answers);
-
-      window.location.href = NEXT;
-    });
-
-    updateUI();
-  </script>
+  updateUI();
+</script>
 </body>
 </html>
