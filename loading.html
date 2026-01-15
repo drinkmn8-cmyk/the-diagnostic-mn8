@@ -15,10 +15,8 @@
       --bg:#000;
       --card:#0f0f14;
       --hair:rgba(255,255,255,.08);
-
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.55);
-
       --accent:#632f96;
       --radius:34px;
     }
@@ -34,7 +32,6 @@
         radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
         var(--bg);
       background-attachment:fixed;
-
       color:var(--text);
       font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       display:grid;
@@ -48,45 +45,31 @@
       background:var(--card);
       border:1px solid var(--hair);
       border-radius:var(--radius);
-      padding:40px 46px 34px;
+      padding:40px 46px 36px;
       box-shadow:0 34px 160px rgba(0,0,0,.72);
       position:relative;
       overflow:hidden;
     }
 
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-60px -80px auto -80px;
-      height:240px;
-      background:radial-gradient(closest-side, rgba(99,47,150,.18), rgba(99,47,150,0));
-      pointer-events:none;
-      filter:blur(2px);
-    }
-
     .powered{
-      position:relative;
       font-size:12px;
       letter-spacing:.16em;
       text-transform:uppercase;
       color:rgba(185,145,235,.72);
       font-weight:500;
-      user-select:none;
       margin-bottom:18px;
+      user-select:none;
     }
     .powered sup{font-size:10px; opacity:.7}
 
     h1{
-      position:relative;
       margin:0 0 10px 0;
       font-size:28px;
-      line-height:1.2;
       font-weight:700;
       color:rgba(185,145,235,.92);
     }
 
     .sub{
-      position:relative;
       margin:0 0 18px 0;
       color:var(--muted);
       font-size:13px;
@@ -96,9 +79,8 @@
     }
 
     .panel{
-      position:relative;
-      margin-top:16px;
-      padding:18px 18px 16px;
+      margin-top:18px;
+      padding:18px 20px 16px;
       border-radius:22px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.02);
@@ -106,15 +88,13 @@
 
     .lineTitle{
       font-size:14px;
-      color:rgba(255,255,255,.90);
-      margin-bottom:8px;
       font-weight:600;
+      margin-bottom:6px;
     }
 
     .line{
       font-size:13px;
       color:rgba(255,255,255,.62);
-      line-height:1.45;
       min-height:18px;
     }
 
@@ -130,7 +110,7 @@
     .bar{
       height:100%;
       width:0%;
-      background:linear-gradient(135deg, var(--accent), rgba(99,47,150,.55));
+      background:linear-gradient(135deg,var(--accent),rgba(99,47,150,.55));
       transition:width .35s ease;
     }
 
@@ -139,31 +119,6 @@
       font-size:12px;
       color:rgba(255,255,255,.45);
     }
-
-    /* State switch */
-    .state{display:block}
-    .state.hidden{display:none}
-
-    /* Complete state styling */
-    .completeTitle{
-      margin:0;
-      font-size:28px;
-      line-height:1.2;
-      font-weight:700;
-      color:rgba(185,145,235,.92);
-    }
-    .completeMsg{
-      margin:14px 0 0;
-      color:rgba(255,255,255,.70);
-      font-size:14px;
-      line-height:1.55;
-      max-width:70ch;
-    }
-
-    @media (max-width:640px){
-      .card{padding:34px 20px 26px}
-      h1,.completeTitle{font-size:24px}
-    }
   </style>
 </head>
 
@@ -171,94 +126,57 @@
   <main class="card">
     <div class="powered">POWERED BY MN8<sup>®</sup></div>
 
-    <!-- LOADING STATE -->
-    <section class="state" id="loadingState">
-      <h1>Reviewing your responses…</h1>
-      <div class="sub">This may take up to 60 seconds.</div>
+    <h1>Reviewing your responses…</h1>
+    <div class="sub">This may take up to 60 seconds.</div>
 
-      <div class="panel">
-        <div class="lineTitle" id="loaderTitle">Analyzing patterns</div>
-        <div class="line" id="loaderLine">Reading your answers and mapping behavioral signals.</div>
+    <div class="panel">
+      <div class="lineTitle" id="title">Analyzing patterns</div>
+      <div class="line" id="line">Reading your answers and mapping behavioral signals.</div>
 
-        <div class="progressWrap" aria-label="progress">
-          <div class="bar" id="bar"></div>
-        </div>
-
-        <div class="eta" id="eta">0% — reviewing data</div>
+      <div class="progressWrap">
+        <div class="bar" id="bar"></div>
       </div>
-    </section>
 
-    <!-- COMPLETE STATE (NO BUTTON) -->
-    <section class="state hidden" id="completeState">
-      <h2 class="completeTitle">Analysis complete.</h2>
-      <p class="completeMsg">
-        Your diagnostic summary is ready. Redirecting to your results…
-      </p>
-    </section>
+      <div class="eta" id="eta">0% — reviewing data</div>
+    </div>
   </main>
 
   <script>
-    // ✅ Adjust these
-    const DURATION_MS = 45000;      // progress hits 100% in ~45s
-    const REDIRECT_DELAY_MS = 1200; // pause after completion before switching page
-    const NEXT_PAGE = "result.html";
+    const TOTAL_TIME = 45000;          // 45 seconds
+    const NEXT_PAGE = "result.html";   // change if needed
 
     const bar = document.getElementById("bar");
     const eta = document.getElementById("eta");
-    const loaderTitle = document.getElementById("loaderTitle");
-    const loaderLine = document.getElementById("loaderLine");
-
-    const loadingState = document.getElementById("loadingState");
-    const completeState = document.getElementById("completeState");
+    const title = document.getElementById("title");
+    const line = document.getElementById("line");
 
     const steps = [
-      { t: 0,     title: "Analyzing patterns",          line: "Reading your answers and mapping behavioral signals." },
-      { t: 9000,  title: "Identifying resistance points",line: "Locating where momentum breaks and why it repeats." },
-      { t: 20000, title: "Checking consistency signals", line: "Comparing intent vs execution tendencies." },
-      { t: 32000, title: "Building your clarity summary",line: "Turning patterns into a direct diagnosis." },
-      { t: 41000, title: "Finalizing",                  line: "Preparing your result and recommendations." }
+      { t: 0,     title:"Analyzing patterns", line:"Reading your answers and mapping behavioral signals." },
+      { t: 12000, title:"Identifying resistance points", line:"Locating where momentum breaks and why it repeats." },
+      { t: 26000, title:"Checking consistency signals", line:"Comparing intent vs execution tendencies." },
+      { t: 38000, title:"Finalizing diagnostic", line:"Preparing your clarity summary." }
     ];
 
-    let start = Date.now();
-    let lastStepIndex = -1;
-    let finished = false;
-
-    function setComplete(){
-      if (finished) return;
-      finished = true;
-
-      // Switch states
-      loadingState.classList.add("hidden");
-      completeState.classList.remove("hidden");
-
-      // Redirect automatically (no button)
-      setTimeout(() => {
-        window.location.href = NEXT_PAGE;
-      }, REDIRECT_DELAY_MS);
-    }
+    const start = Date.now();
 
     function tick(){
       const elapsed = Date.now() - start;
-      const p = Math.min(1, elapsed / DURATION_MS);
-      const pct = Math.round(p * 100);
+      const p = Math.min(1, elapsed / TOTAL_TIME);
+      const percent = Math.round(p * 100);
 
-      bar.style.width = pct + "%";
-      eta.textContent = `${pct}% — reviewing data`;
+      bar.style.width = percent + "%";
+      eta.textContent = `${percent}% — reviewing data`;
 
-      // Step messages
       for (let i = steps.length - 1; i >= 0; i--) {
         if (elapsed >= steps[i].t) {
-          if (i !== lastStepIndex) {
-            loaderTitle.textContent = steps[i].title;
-            loaderLine.textContent = steps[i].line;
-            lastStepIndex = i;
-          }
+          title.textContent = steps[i].title;
+          line.textContent = steps[i].line;
           break;
         }
       }
 
-      if (pct >= 100) {
-        setComplete();
+      if (percent >= 100) {
+        window.location.href = NEXT_PAGE;
         return;
       }
 
