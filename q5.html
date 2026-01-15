@@ -215,7 +215,7 @@
   const continueBtn = document.getElementById("continueBtn");
   const backBtn = document.getElementById("backBtn");
 
-  const options = Array.from(document.querySelectorAll('input[name="q5"]'));
+const options = Array.from(document.querySelectorAll(`input[name="${KEY}"]`));
 
   function getAnswers() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
