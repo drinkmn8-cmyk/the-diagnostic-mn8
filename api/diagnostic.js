@@ -5,9 +5,7 @@ export default async function handler(req, res) {
 
   try {
     const { answers } = req.body || {};
-    if (!answers) {
-      return res.status(400).json({ error: "Missing answers" });
-    }
+    if (!answers) return res.status(400).json({ error: "Missing answers" });
 
     const prompt = `
 You are MN8. Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
@@ -46,13 +44,9 @@ q5: ${answers.q5 || ""}
     const data = await r.json();
 
     if (!r.ok) {
-      return res.status(500).json({
-        error: "OpenAI request failed",
-        details: data,
-      });
+      return res.status(500).json({ error: "OpenAI request failed", details: data });
     }
 
-    // The model returns text. We told it to output JSON only.
     const text =
       (data.output_text && data.output_text.trim()) ||
       (data.output?.[0]?.content?.[0]?.text && data.output[0].content[0].text.trim()) ||
@@ -62,19 +56,12 @@ q5: ${answers.q5 || ""}
     try {
       parsed = JSON.parse(text);
     } catch {
-      return res.status(500).json({
-        error: "Model did not return valid JSON",
-        raw: text,
-      });
+      return res.status(500).json({ error: "Model did not return valid JSON", raw: text });
     }
 
-    // Hard validation: must contain the 4 keys
     const { core, mechanism, consequence, closing } = parsed || {};
     if (!core || !mechanism || !consequence || !closing) {
-      return res.status(500).json({
-        error: "Missing required fields in JSON",
-        parsed,
-      });
+      return res.status(500).json({ error: "Missing required fields", parsed });
     }
 
     return res.status(200).json({ core, mechanism, consequence, closing });
