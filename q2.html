@@ -208,64 +208,58 @@
     </div>
   </main>
 
-  <script>
-    const STORAGE_KEY = "mn8_answers";
-    const KEY  = "q2";
-    const NEXT = "q3.html";
+<script>
+  const STORAGE_KEY = "mn8_answers";
+  const KEY = "q2";
+  const NEXT = "q3.html";
 
-    const continueBtn = document.getElementById("continueBtn");
-    const backBtn = document.getElementById("backBtn");
+  const continueBtn = document.getElementById("continueBtn");
+  const backBtn = document.getElementById("backBtn");
 
-    // ✅ FIXED: must match your HTML
-    const options = Array.from(document.querySelectorAll('input[name="q2"]'));
+  const options = Array.from(document.querySelectorAll('input[name="q2"]'));
 
-    function getAnswers() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-      catch { return {}; }
-    }
+  function getAnswers() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch { return {}; }
+  }
+  function setAnswers(obj) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  }
 
-    function setAnswers(next) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    }
+  const existing = getAnswers();
+  if (existing[KEY]) {
+    const match = options.find(o => o.value === existing[KEY]);
+    if (match) match.checked = true;
+  }
 
-    function selectedValue() {
-      const picked = options.find(o => o.checked);
-      return picked ? picked.value : "";
-    }
+  function selectedValue() {
+    const picked = options.find(o => o.checked);
+    return picked ? picked.value : "";
+  }
 
-    function updateUI() {
-      continueBtn.disabled = !selectedValue();
-    }
+  function updateUI() {
+    continueBtn.disabled = !selectedValue();
+  }
 
-    // ✅ Prefill on back
-    const existing = getAnswers();
-    if (existing[KEY]) {
-      const match = options.find(o => o.value === existing[KEY]);
-      if (match) match.checked = true;
-    }
-
-    // ✅ Single-select enforcement (checkboxes behaving like radio)
-    options.forEach(o => {
-      o.addEventListener("change", () => {
-        options.forEach(x => { if (x !== o) x.checked = false; });
-        updateUI();
-      });
-    });
-
-    backBtn.addEventListener("click", () => history.back());
-
-    continueBtn.addEventListener("click", () => {
-      const val = selectedValue();
-      if (!val) return;
-
-      const answers = getAnswers();
-      answers[KEY] = val;
-      setAnswers(answers);
-
-      window.location.href = NEXT;
-    });
-
+  options.forEach(o => o.addEventListener("change", () => {
+    options.forEach(x => { if (x !== o) x.checked = false; });
     updateUI();
-  </script>
+  }));
+
+  backBtn.addEventListener("click", () => history.back());
+
+  continueBtn.addEventListener("click", () => {
+    const val = selectedValue();
+    if (!val) return;
+
+    const answers = getAnswers();
+    answers[KEY] = val;
+    setAnswers(answers);
+
+    window.location.href = NEXT;
+  });
+
+  updateUI();
+</script>
 </body>
 </html>
