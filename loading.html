@@ -149,16 +149,6 @@
     const title = document.getElementById("title");
     const line = document.getElementById("line");
 
-    const r = await fetch("/api/diagnostic", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ answers }),
-});
-const data = await r.json();
-localStorage.setItem("mn8_summary", JSON.stringify(data));
-window.location.href = "results.html";
-
-
     const steps = [
       { t: 0,     title:"Analyzing patterns", line:"Reading your answers and mapping behavioral signals." },
       { t: 12000, title:"Identifying resistance points", line:"Locating where momentum breaks and why it repeats." },
@@ -183,6 +173,15 @@ window.location.href = "results.html";
           break;
         }
       }
+
+      const r = await fetch("/api/diagnostic", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ answers }),
+});
+const data = await r.json();
+localStorage.setItem("mn8_summary", JSON.stringify(data));
+window.location.href = "results.html";
 
       if (percent >= 100) {
         window.location.href = NEXT_PAGE;
