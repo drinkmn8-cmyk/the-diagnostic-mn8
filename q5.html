@@ -207,48 +207,66 @@
     </div>
   </main>
 
-  <script>
-    const backBtn = document.getElementById("backBtn");
-    const continueBtn = document.getElementById("continueBtn");
-    const boxes = Array.from(document.querySelectorAll('input[name="q5"]'));
+<script>
+  const STORAGE_KEY = "mn8_answers";
 
-    // Load saved
-    try{
-      const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
-      if (saved.q5_current_pattern) {
-        boxes.forEach(b => b.checked = (b.value === saved.q5_current_pattern));
-      }
-    }catch{}
+  // CHANGE THESE PER PAGE
+  const KEY  = "q5";        // q2, q3, q5 etc.
+  const NEXT = "reviewing.html";   // next page
 
-    function sync(){
-      const selected = boxes.find(b => b.checked);
-      continueBtn.disabled = !selected;
+  const continueBtn = document.getElementById("continueBtn");
+  const backBtn = document.getElementById("backBtn");
 
-      try{
-        const saved = JSON.parse(localStorage.getItem("mn8_diagnostic_answers") || "{}");
-        saved.q5_current_pattern = selected ? selected.value : "";
-        localStorage.setItem("mn8_diagnostic_answers", JSON.stringify(saved));
-      }catch{}
-    }
+  // Your options must use: name="choice"
+  const options = Array.from(document.querySelectorAll('input[name="choice"]'));
 
-    // Single-select behavior
-    boxes.forEach(box => {
-      box.addEventListener("change", () => {
-        if (box.checked) boxes.forEach(b => { if (b !== box) b.checked = false; });
-        sync();
-      });
-    });
+  function getAnswers() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch { return {}; }
+  }
+  function setAnswers(next) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  }
 
-    backBtn.addEventListener("click", () => {
-      window.location.href = "q4.html";
-    });
+  // Pre-fill if user comes back
+  const existing = getAnswers();
+  if (existing[KEY]) {
+    const match = options.find(o => o.value === existing[KEY]);
+    if (match) match.checked = true;
+  }
 
+  function selectedValue() {
+    const picked = options.find(o => o.checked);
+    return picked ? picked.value : "";
+  }
+
+  function updateUI() {
+    if (!continueBtn) return;
+    continueBtn.disabled = !selectedValue();
+  }
+
+  options.forEach(o => o.addEventListener("change", () => {
+    // enforce single select (radio behavior)
+    options.forEach(x => { if (x !== o) x.checked = false; });
+    updateUI();
+  }));
+
+  if (backBtn) backBtn.addEventListener("click", () => history.back());
+
+  if (continueBtn) {
     continueBtn.addEventListener("click", () => {
-      if (continueBtn.disabled) return;
-      window.location.href = "reviewing.html";
-    });
+      const val = selectedValue();
+      if (!val) return;
 
-    sync();
-  </script>
+      const answers = getAnswers();
+      answers[KEY] = val;
+      setAnswers(answers);
+
+      window.location.href = NEXT;
+    });
+  }
+
+  updateUI();
+</script>
 </body>
 </html>
