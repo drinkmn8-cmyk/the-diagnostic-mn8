@@ -5,52 +5,41 @@ export default async function handler(req, res) {
 
   try {
     const { answers } = req.body || {};
-    if (!answers || typeof answers !== "object") {
+    if (!answers) {
       return res.status(400).json({ error: "Missing answers" });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: "Missing OPENAI_API_KEY in Vercel env vars" });
-    }
+    const prompt = `
+You are MN8. Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
+Return ONLY valid JSON with exactly these keys:
+core, mechanism, consequence, closing
 
-    // Keep it deterministic and "Apple clean"
-    const system = `
-You are MN8 Diagnostic.
-Write at a 5th grade reading level.
-No fluff. No motivation talk.
-Give clarity + a decision.
-Output JSON ONLY with:
-{
-  "core": "2–3 short sentences",
-  "mechanism": "2–3 short sentences",
-  "consequence": "2–3 short sentences",
-  "closing": "1–2 short sentences that land like a decision"
-}
-    `.trim();
+Rules:
+- core: 2–4 sentences
+- mechanism: 2–4 sentences
+- consequence: 2–4 sentences
+- closing: 2–3 sentences, lands like a decision (not a thought)
+- No bullet points.
+- No extra keys.
+- No markdown.
 
-    const user = `
-Answers:
+User answers:
 q1: ${answers.q1 || ""}
 q2: ${answers.q2 || ""}
 q3: ${answers.q3 || ""}
 q4: ${answers.q4 || ""}
 q5: ${answers.q5 || ""}
-    `.trim();
+`.trim();
 
     const r = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        input: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        temperature: 0.4,
+        input: prompt,
       }),
     });
 
@@ -63,29 +52,33 @@ q5: ${answers.q5 || ""}
       });
     }
 
-    // Responses API returns text in output; safest is to read it like this:
+    // The model returns text. We told it to output JSON only.
     const text =
-      data.output_text ||
-      (Array.isArray(data.output)
-        ? data.output
-            .flatMap((o) => o.content || [])
-            .map((c) => c.text || "")
-            .join("")
-        : "");
+      (data.output_text && data.output_text.trim()) ||
+      (data.output?.[0]?.content?.[0]?.text && data.output[0].content[0].text.trim()) ||
+      "";
 
-    // Expecting JSON output
-    let json;
+    let parsed;
     try {
-      json = JSON.parse(text);
-    } catch (e) {
+      parsed = JSON.parse(text);
+    } catch {
       return res.status(500).json({
         error: "Model did not return valid JSON",
         raw: text,
       });
     }
 
-    return res.status(200).json({ summary: json });
+    // Hard validation: must contain the 4 keys
+    const { core, mechanism, consequence, closing } = parsed || {};
+    if (!core || !mechanism || !consequence || !closing) {
+      return res.status(500).json({
+        error: "Missing required fields in JSON",
+        parsed,
+      });
+    }
+
+    return res.status(200).json({ core, mechanism, consequence, closing });
   } catch (err) {
-    return res.status(500).json({ error: "Server crash", details: String(err) });
+    return res.status(500).json({ error: "Server error", details: String(err) });
   }
 }
