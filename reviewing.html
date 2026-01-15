@@ -112,7 +112,7 @@
       height:100%;
       width:0%;
       background:linear-gradient(135deg,var(--accent),rgba(99,47,150,.55));
-      transition:width .25s ease;
+      transition:width .18s linear;
     }
 
     .eta{
@@ -130,6 +130,8 @@
       color:#ff5a5a;
       font-size:12px;
       display:none;
+      line-height:1.4;
+      white-space:pre-line;
     }
   </style>
 </head>
@@ -160,11 +162,13 @@
 
   <script>
     // ===== CONFIG =====
-    const TOTAL_TIME_MS = 45000;               // your “45 sec” target
-    const RESULTS_PAGE = "results.html";       // final page
-    const FALLBACK_BACK = "q5.html";           // if answers missing, send them back here (change if needed)
+    const STORAGE_KEY = "mn8_answers";
+    const TOTAL_TIME_MS = 45000;
+    const RESULTS_PAGE = "results.html";
+    const FALLBACK_BACK = "q5.html";
 
-    // Steps for the UI text
+    const REQUIRED = ["q1","q2","q3","q4","q5"];
+
     const steps = [
       { t: 0,     title: "Analyzing patterns",            line: "Reading your answers and mapping behavioral signals." },
       { t: 12000, title: "Identifying resistance points", line: "Locating where momentum breaks and why it repeats." },
@@ -172,7 +176,6 @@
       { t: 38000, title: "Finalizing diagnostic",         line: "Preparing your clarity summary." }
     ];
 
-    // ===== ELEMENTS =====
     const bar = document.getElementById("bar");
     const etaText = document.getElementById("etaText");
     const statusText = document.getElementById("statusText");
@@ -180,39 +183,29 @@
     const line = document.getElementById("line");
     const err = document.getElementById("err");
 
-    // ===== HELPERS =====
-    function getAnswersFromStorage() {
-      // Expecting you stored answers in localStorage as you go.
-      // If your key is different, change it here.
-      const raw = localStorage.getItem("mn8_answers");
-      if (!raw) return null;
-
-      try {
-        const parsed = JSON.parse(raw);
-        return parsed;
-      } catch {
-        return null;
-      }
-    }
-
-    function missingKeys(answers) {
-      const req = ["q1","q2","q3","q4","q5"];
-      return req.filter(k => !answers || !answers[k] || String(answers[k]).trim().length === 0);
-    }
-
     function setError(message) {
       err.style.display = "block";
       err.textContent = message;
     }
 
-    // ===== UI PROGRESS (runs regardless of API) =====
-    const start = Date.now();
+    function getAnswers() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function missingKeys(answers) {
+      return REQUIRED.filter(k => !answers || !answers[k] || String(answers[k]).trim().length === 0);
+    }
+
+    // ===== PROGRESS (time-based, guaranteed to finish) =====
+    const start = performance.now();
     let uiDone = false;
 
-    function uiTick() {
-      const elapsed = Date.now() - start;
+    const uiTimer = setInterval(() => {
+      const elapsed = performance.now() - start;
       const p = Math.min(1, elapsed / TOTAL_TIME_MS);
-      const percent = Math.floor(p * 100);
+      const percent = Math.round(p * 100);
 
       bar.style.width = percent + "%";
       etaText.textContent = `${percent}% — reviewing data`;
@@ -225,22 +218,26 @@
         }
       }
 
-      if (percent >= 100) uiDone = true;
+      if (percent >= 100) {
+        uiDone = true;
+        clearInterval(uiTimer);
+      }
+    }, 80);
 
-      if (!uiDone) requestAnimationFrame(uiTick);
-    }
-
-    // ===== API CALL (runs ONCE) =====
-    async function runDiagnosticOnce() {
+    // ===== RUN ONCE =====
+    (async function run() {
       statusText.textContent = "processing…";
 
-      const answers = getAnswersFromStorage();
-
+      const answers = getAnswers();
       const missing = missingKeys(answers);
+
       if (missing.length) {
         statusText.textContent = "missing answers";
-        setError("Missing answers. Go back and complete the diagnostic.");
-        setTimeout(() => { window.location.href = FALLBACK_BACK; }, 1200);
+        setError(
+          "Missing answers:\n- " + missing.join("\n- ") +
+          "\n\nFix: open console and run:\nlocalStorage.getItem(\"mn8_answers\")\n\n(You are either not saving Q1, or you are on a different domain.)"
+        );
+        setTimeout(() => { window.location.href = FALLBACK_BACK; }, 1600);
         return;
       }
 
@@ -255,16 +252,14 @@
 
         if (!r.ok) {
           statusText.textContent = "error";
-          setError((data && data.error) ? data.error : "Server error. Please try again.");
+          setError((data && data.error) ? data.error : "Server error. Please refresh and try again.");
           return;
         }
 
-        // Save the AI output for results page boxes
         localStorage.setItem("mn8_summary", JSON.stringify(data));
-
         statusText.textContent = "ready";
 
-        // If UI isn’t finished yet, wait until it is (feels premium)
+        // wait for the bar to finish (premium)
         const wait = () => {
           if (uiDone) {
             window.location.href = RESULTS_PAGE;
@@ -278,11 +273,7 @@
         statusText.textContent = "offline";
         setError("Network error. Please refresh and try again.");
       }
-    }
-
-    // Start both:
-    uiTick();
-    runDiagnosticOnce();
+    })();
   </script>
 </body>
 </html>
