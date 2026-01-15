@@ -14,197 +14,207 @@
     :root{
       --bg:#000;
       --card:#0f0f14;
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --hair:rgba(255,255,255,.10);
-
+      --hair: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.62);
       --accent:#632f96;
       --btn:#6a38a3;
-
-      --radius:28px;
+      --radius: 28px;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
 
     body{
       margin:0;
       min-height:100vh;
+      font-family:"Lato", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
       background:
-        radial-gradient(900px 520px at 50% 0%, rgba(99, 47, 150, 0.45), rgba(99, 47, 150, 0) 62%),
-        radial-gradient(760px 420px at 50% 18%, rgba(99, 47, 150, 0.18), rgba(99, 47, 150, 0) 70%),
+        radial-gradient(900px 520px at 50% 0%, rgba(99,47,150,.55), rgba(99,47,150,0) 62%),
+        radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
         var(--bg);
       background-repeat:no-repeat;
       background-attachment:fixed;
-
-      color:var(--text);
-      font-family:'Lato', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      display:grid;
-      place-items:center;
-      padding:34px 18px;
+      padding: 40px 32px;
     }
 
     .wrap{
-      width:100%;
-      max-width:980px;
-    }
-
-    .grid{
+      max-width: 1200px;
+      margin: 0 auto;
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:22px;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 26px;
       align-items:start;
     }
 
     .stack{
-      display:grid;
-      gap:22px;
+      display:flex;
+      flex-direction:column;
+      gap: 26px;
     }
 
     .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid var(--hair);
-      border-radius:34px;
-      padding:26px 28px;
-      box-shadow: 0 30px 110px rgba(0,0,0,.62);
+      background: rgba(15,15,20,0.92);
+      border: 1px solid var(--hair);
+      border-radius: var(--radius);
+      padding: 28px 28px;
+      box-shadow: 0 30px 110px rgba(0,0,0,0.62);
+      backdrop-filter: blur(8px);
     }
 
-    .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:16px;
-      margin-bottom:18px;
-    }
-
-    .powered{
-      font-size:12px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:rgba(185,145,235,.72);
-      user-select:none;
-      font-weight:500;
-    }
-
-    .mn8{
-      font-size:20px;
-      letter-spacing:.06em;
-      color:rgba(185,145,235,.82);
-      font-weight:500;
-    }
-
-    .label{
-      margin:0 0 12px;
-      font-size:22px;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-      color:rgba(185,145,235,.82);
-      font-weight:600;
+    .title{
+      margin:0 0 14px 0;
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      font-weight: 800;
+      color: rgba(185,145,235,0.85);
+      text-transform: uppercase;
     }
 
     .text{
       margin:0;
-      color:rgba(255,255,255,.86);
-      line-height:1.7;
-      font-size:14px;
-      white-space:pre-line; /* keeps line breaks */
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.86);
+      white-space: pre-line; /* keeps line breaks from AI */
     }
 
-    .actions{
-      margin-top:26px;
+    .powered{
+      display:inline-block;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(185,145,235,0.70);
+      margin-bottom: 10px;
+      user-select:none;
+    }
+
+    .closing .title{
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .closing .text{
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .right{
       display:flex;
-      justify-content:center;
+      flex-direction:column;
+      gap: 26px;
+      align-items:stretch;
+    }
+
+    .ctaRow{
+      display:flex;
+      justify-content:flex-end;
+      padding-right: 6px;
     }
 
     .btn{
       appearance:none;
       border:0;
-      border-radius:18px;
-      padding:14px 26px;
-      min-width:260px;
-      background:var(--btn);
-      color:rgba(10,10,14,.92);
-      font-weight:700;
-      font-size:18px;
+      border-radius: 18px;
+      padding: 14px 26px;
+      min-width: 320px;
+      background: var(--btn);
+      color: rgba(10,10,14,0.92);
+      font-weight: 800;
+      font-size: 20px;
       cursor:pointer;
-      transition:opacity .12s ease, transform .08s ease;
-      font-family:'Lato', sans-serif;
+      transition: opacity .12s ease, transform .08s ease;
     }
-    .btn:hover{opacity:.92}
-    .btn:active{transform:translateY(1px)}
+    .btn:hover{ opacity:.92; }
+    .btn:active{ transform: translateY(1px); }
 
     /* Responsive */
-    @media (max-width: 860px){
-      .grid{grid-template-columns:1fr}
+    @media (max-width: 980px){
+      body{ padding: 28px 18px; }
+      .wrap{ grid-template-columns: 1fr; }
+      .btn{ min-width: 240px; width: 100%; }
+      .ctaRow{ padding-right:0; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="header" style="margin-bottom:18px;">
-      <div class="powered">POWERED BY <span class="mn8">MN8</span><sup style="font-size:10px; opacity:.65;">®</sup></div>
-      <div></div>
-    </div>
+  <main class="wrap">
 
-    <div class="grid">
-      <!-- LEFT COLUMN -->
-      <div class="stack">
-        <section class="card">
-          <h2 class="label">CORE DIAGNOSIS</h2>
-          <p class="text" id="coreText"></p>
-        </section>
+    <!-- LEFT COLUMN -->
+    <section class="stack">
 
-        <section class="card">
-          <h2 class="label">CONSEQUENCE</h2>
-          <p class="text" id="consequenceText"></p>
-        </section>
-
-        <section class="card">
-          <h2 class="label">HIDDEN MECHANISM</h2>
-          <p class="text" id="mechanismText"></p>
-        </section>
+      <div class="card">
+        <div class="title">CORE DIAGNOSIS</div>
+        <p class="text" id="coreText">
+Your responses point to a clear pattern.
+Progress didn’t fade gradually. It stopped after a break.
+Since then, starting has felt heavier than it used to.
+        </p>
       </div>
 
-      <!-- RIGHT COLUMN -->
-      <div class="stack">
-        <section class="card" style="max-width: 420px; justify-self:end;">
-          <h2 class="label">CLOSING INSIGHT</h2>
-          <p class="text" id="closingText"></p>
-        </section>
-
-        <div class="actions" style="justify-content:flex-end;">
-          <button class="btn" id="continueBtn">Continue</button>
-        </div>
+      <div class="card">
+        <div class="title">CONSEQUENCE</div>
+        <p class="text" id="consequenceText">
+Right now, execution depends on how you feel.
+When energy drops or doubt appears, nothing holds the action in place.
+Each restart without structure makes the pause come sooner next time.
+        </p>
       </div>
-    </div>
-  </div>
+
+      <div class="card">
+        <div class="title">HIDDEN MECHANISM</div>
+        <p class="text" id="mechanismText">
+When that break happened, your system adapted.
+It learned to slow you down before commitment—not during effort.
+This isn’t hesitation. It’s protection against another restart that doesn’t last.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN -->
+    <aside class="right">
+
+      <div class="card closing">
+        <div class="powered">POWERED BY MN8<sup style="font-size:10px;opacity:.65;">®</sup></div>
+        <div class="title">CLOSING INSIGHT</div>
+        <p class="text" id="closingText">
+This didn’t fail because you lacked discipline.
+It failed because nothing was holding execution in place.
+Until structure is installed, effort will always feel optional.
+        </p>
+      </div>
+
+      <div class="ctaRow">
+        <button class="btn" id="continueBtn">Continue</button>
+      </div>
+
+    </aside>
+  </main>
 
   <script>
-    // Step 6: Read summary from localStorage and fill the boxes
-    const summary = JSON.parse(localStorage.getItem("mn8_summary") || "{}");
+    // STEP 6: Fill boxes from localStorage (AI output)
+    const raw = localStorage.getItem("mn8_summary");
+    const summary = raw ? JSON.parse(raw) : null;
 
-    // Safe fallback text (so page never looks broken)
-    const fallback = {
-      core: "No summary loaded.\nRun the diagnostic first.",
-      mechanism: "No summary loaded.\nRun the diagnostic first.",
-      consequence: "No summary loaded.\nRun the diagnostic first.",
-      closing: "No summary loaded.\nRun the diagnostic first."
-    };
+    if (summary) {
+      // Support both {core,mechanism,consequence,closing} OR {coreText,...} etc.
+      const core = summary.core || summary.coreText || "";
+      const mech = summary.mechanism || summary.hidden || summary.mechanismText || "";
+      const cons = summary.consequence || summary.consequenceText || "";
+      const clos = summary.closing || summary.closingText || "";
 
-    const core = summary.core || fallback.core;
-    const mechanism = summary.mechanism || fallback.mechanism;
-    const consequence = summary.consequence || fallback.consequence;
-    const closing = summary.closing || fallback.closing;
+      if (core) document.getElementById("coreText").textContent = core;
+      if (cons) document.getElementById("consequenceText").textContent = cons;
+      if (mech) document.getElementById("mechanismText").textContent = mech;
+      if (clos) document.getElementById("closingText").textContent = clos;
+    }
 
-    document.getElementById("coreText").textContent = core;
-    document.getElementById("mechanismText").textContent = mechanism;
-    document.getElementById("consequenceText").textContent = consequence;
-    document.getElementById("closingText").textContent = closing;
-
-    // Continue button (change this destination)
+    // Continue button -> next page (change this)
     document.getElementById("continueBtn").addEventListener("click", () => {
-      window.location.href = "gate.html"; // change if needed
+      window.location.href = "gate.html"; // or "risk.html" or "offer.html"
     });
   </script>
 </body>
