@@ -20,10 +20,8 @@
       --accent:#632f96;
       --radius:34px;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
-
     body{
       margin:0;
       min-height:100vh;
@@ -38,7 +36,6 @@
       place-items:center;
       padding:28px 18px;
     }
-
     .card{
       width:100%;
       max-width:920px;
@@ -50,7 +47,6 @@
       position:relative;
       overflow:hidden;
     }
-
     .powered{
       font-size:12px;
       letter-spacing:.16em;
@@ -61,14 +57,12 @@
       user-select:none;
     }
     .powered sup{font-size:10px; opacity:.7}
-
     h1{
       margin:0 0 10px 0;
       font-size:28px;
       font-weight:700;
       color:rgba(185,145,235,.92);
     }
-
     .sub{
       margin:0 0 18px 0;
       color:var(--muted);
@@ -77,26 +71,23 @@
       text-transform:uppercase;
       line-height:1.6;
     }
-
     .panel{
       margin-top:18px;
       padding:18px 20px 16px;
       border-radius:22px;
       background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.06);
     }
-
     .lineTitle{
       font-size:14px;
       font-weight:600;
       margin-bottom:6px;
     }
-
     .line{
       font-size:13px;
       color:rgba(255,255,255,.62);
       min-height:18px;
     }
-
     .progressWrap{
       margin-top:14px;
       height:10px;
@@ -105,18 +96,23 @@
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
     }
-
     .bar{
       height:100%;
       width:0%;
       background:linear-gradient(135deg,var(--accent),rgba(99,47,150,.55));
-      transition:width .35s ease;
+      transition:width .25s ease;
     }
-
     .eta{
       margin-top:12px;
       font-size:12px;
       color:rgba(255,255,255,.45);
+    }
+    .error{
+      margin-top:10px;
+      font-size:12px;
+      color:rgba(255,140,140,.95);
+      display:none;
+      line-height:1.4;
     }
   </style>
 </head>
@@ -137,35 +133,56 @@
       </div>
 
       <div class="eta" id="eta">0% — reviewing data</div>
+      <div class="error" id="err"></div>
     </div>
   </main>
 
   <script>
-    const TOTAL_TIME = 30000;          // 45 seconds
-    const NEXT_PAGE = "result.html";   // change if needed
+    // ===== CONFIG =====
+    const TOTAL_TIME = 45000;                 // 45 seconds
+    const NEXT_PAGE = "results.html";         // your results page
+    const ANSWERS_KEY = "mn8_answers";         // where Q pages saved answers
+    const SUMMARY_KEY = "mn8_summary";         // where we store AI output
 
     const bar = document.getElementById("bar");
     const eta = document.getElementById("eta");
     const title = document.getElementById("title");
     const line = document.getElementById("line");
+    const err = document.getElementById("err");
 
     const steps = [
-      { t: 0,     title:"Analyzing patterns", line:"Reading your answers and mapping behavioral signals." },
+      { t: 0,     title:"Analyzing patterns",            line:"Reading your answers and mapping behavioral signals." },
       { t: 12000, title:"Identifying resistance points", line:"Locating where momentum breaks and why it repeats." },
-      { t: 26000, title:"Checking consistency signals", line:"Comparing intent vs execution tendencies." },
-      { t: 38000, title:"Finalizing diagnostic", line:"Preparing your clarity summary." }
+      { t: 26000, title:"Checking consistency signals",  line:"Comparing intent vs execution tendencies." },
+      { t: 38000, title:"Finalizing diagnostic",         line:"Preparing your clarity summary." }
     ];
 
     const start = Date.now();
+    let done = false;
 
+    function setPercent(percent, label){
+      const p = Math.max(0, Math.min(100, Math.round(percent)));
+      bar.style.width = p + "%";
+      eta.textContent = `${p}% — ${label}`;
+    }
+
+    function showError(message){
+      err.style.display = "block";
+      err.textContent = message;
+    }
+
+    // 1) Progress animation (independent from API)
     function tick(){
+      if (done) return;
+
       const elapsed = Date.now() - start;
-      const p = Math.min(1, elapsed / TOTAL_TIME);
-      const percent = Math.round(p * 100);
 
-      bar.style.width = percent + "%";
-      eta.textContent = `${percent}% — reviewing data`;
+      // Smooth progress to 90% while waiting
+      const target = 90;
+      const p = Math.min(target, (elapsed / TOTAL_TIME) * 100);
+      setPercent(p, "reviewing data");
 
+      // Update text phase
       for (let i = steps.length - 1; i >= 0; i--) {
         if (elapsed >= steps[i].t) {
           title.textContent = steps[i].title;
@@ -174,24 +191,55 @@
         }
       }
 
-      const r = await fetch("/api/diagnostic", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ answers }),
-});
-const data = await r.json();
-localStorage.setItem("mn8_summary", JSON.stringify(data));
-window.location.href = "results.html";
-
-      if (percent >= 100) {
-        window.location.href = NEXT_PAGE;
-        return;
-      }
-
       requestAnimationFrame(tick);
     }
 
+    // 2) API call ONCE
+    async function runDiagnostic(){
+      const raw = localStorage.getItem(ANSWERS_KEY);
+      if (!raw) {
+        showError("Missing answers. Go back and complete the diagnostic.");
+        return;
+      }
+
+      let answers;
+      try { answers = JSON.parse(raw); }
+      catch {
+        showError("Answers are corrupted. Go back and try again.");
+        return;
+      }
+
+      try {
+        const r = await fetch("/api/diagnostic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answers })
+        });
+
+        const data = await r.json().catch(() => ({}));
+
+        if (!r.ok) {
+          showError(data?.error || "Server error. Try again.");
+          return;
+        }
+
+        // Store and finish
+        localStorage.setItem(SUMMARY_KEY, JSON.stringify(data));
+        done = true;
+        setPercent(100, "complete");
+
+        setTimeout(() => {
+          window.location.href = NEXT_PAGE;
+        }, 450);
+
+      } catch (e) {
+        showError("Network error. Check your connection and try again.");
+      }
+    }
+
+    // Start
     tick();
+    runDiagnostic();
   </script>
 </body>
 </html>
