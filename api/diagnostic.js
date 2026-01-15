@@ -7,26 +7,32 @@ export default async function handler(req, res) {
     const { answers } = req.body || {};
     if (!answers) return res.status(400).json({ error: "Missing answers" });
 
+    // Hard validation (prevents silent failures)
+    const required = ["q1", "q2", "q3", "q4", "q5"];
+    const missing = required.filter((k) => !answers[k] || String(answers[k]).trim().length === 0);
+    if (missing.length) {
+      return res.status(400).json({ error: "Missing answers", missing });
+    }
+
     const prompt = `
-You are MN8. Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
-Return ONLY valid JSON with exactly these keys:
+Write a premium diagnostic summary in simple, direct language (5th–7th grade level).
+
+Return ONLY JSON with exactly these keys:
 core, mechanism, consequence, closing
 
 Rules:
 - core: 2–4 sentences
 - mechanism: 2–4 sentences
 - consequence: 2–4 sentences
-- closing: 2–3 sentences, lands like a decision (not a thought)
-- No bullet points.
-- No extra keys.
-- No markdown.
+- closing: 2–3 sentences, lands like a decision
+- No bullet points. No extra keys. No markdown.
 
 User answers:
-q1: ${answers.q1 || ""}
-q2: ${answers.q2 || ""}
-q3: ${answers.q3 || ""}
-q4: ${answers.q4 || ""}
-q5: ${answers.q5 || ""}
+q1: ${answers.q1}
+q2: ${answers.q2}
+q3: ${answers.q3}
+q4: ${answers.q4}
+q5: ${answers.q5}
 `.trim();
 
     const r = await fetch("https://api.openai.com/v1/responses", {
@@ -37,7 +43,12 @@ q5: ${answers.q5 || ""}
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        input: prompt,
+        // FORCE JSON OUTPUT (this is the fix)
+        response_format: { type: "json_object" },
+        input: [
+          { role: "system", content: "You are MN8. Output must be valid JSON only." },
+          { role: "user", content: prompt },
+        ],
       }),
     });
 
@@ -47,19 +58,15 @@ q5: ${answers.q5 || ""}
       return res.status(500).json({ error: "OpenAI request failed", details: data });
     }
 
-    const text =
-      (data.output_text && data.output_text.trim()) ||
-      (data.output?.[0]?.content?.[0]?.text && data.output[0].content[0].text.trim()) ||
-      "";
+    // Responses API: best source is output_parsed when using json_object
+    const parsed = data.output_parsed;
 
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      return res.status(500).json({ error: "Model did not return valid JSON", raw: text });
+    if (!parsed) {
+      return res.status(500).json({ error: "No parsed JSON returned", details: data });
     }
 
-    const { core, mechanism, consequence, closing } = parsed || {};
+    const { core, mechanism, consequence, closing } = parsed;
+
     if (!core || !mechanism || !consequence || !closing) {
       return res.status(500).json({ error: "Missing required fields", parsed });
     }
