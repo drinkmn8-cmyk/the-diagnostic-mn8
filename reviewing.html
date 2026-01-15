@@ -20,8 +20,10 @@
       --accent:#632f96;
       --radius:34px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
+
     body{
       margin:0;
       min-height:100vh;
@@ -36,17 +38,19 @@
       place-items:center;
       padding:28px 18px;
     }
+
     .card{
       width:100%;
-      max-width:920px;
+      max-width:980px;
       background:var(--card);
       border:1px solid var(--hair);
       border-radius:var(--radius);
-      padding:40px 46px 36px;
+      padding:52px 56px 48px;
       box-shadow:0 34px 160px rgba(0,0,0,.72);
       position:relative;
       overflow:hidden;
     }
+
     .powered{
       font-size:12px;
       letter-spacing:.16em;
@@ -57,37 +61,44 @@
       user-select:none;
     }
     .powered sup{font-size:10px; opacity:.7}
+
     h1{
       margin:0 0 10px 0;
-      font-size:28px;
+      font-size:32px;
       font-weight:700;
       color:rgba(185,145,235,.92);
     }
+
     .sub{
-      margin:0 0 18px 0;
+      margin:0 0 22px 0;
       color:var(--muted);
       font-size:13px;
       letter-spacing:.10em;
       text-transform:uppercase;
       line-height:1.6;
     }
+
     .panel{
-      margin-top:18px;
-      padding:18px 20px 16px;
+      margin-top:22px;
+      padding:22px 24px 18px;
       border-radius:22px;
       background:rgba(255,255,255,.02);
       border:1px solid rgba(255,255,255,.06);
     }
+
     .lineTitle{
       font-size:14px;
-      font-weight:600;
+      font-weight:700;
       margin-bottom:6px;
+      color:rgba(255,255,255,.92);
     }
+
     .line{
       font-size:13px;
       color:rgba(255,255,255,.62);
       min-height:18px;
     }
+
     .progressWrap{
       margin-top:14px;
       height:10px;
@@ -96,23 +107,29 @@
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
     }
+
     .bar{
       height:100%;
       width:0%;
       background:linear-gradient(135deg,var(--accent),rgba(99,47,150,.55));
       transition:width .25s ease;
     }
+
     .eta{
       margin-top:12px;
       font-size:12px;
       color:rgba(255,255,255,.45);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
-    .error{
+
+    .err{
       margin-top:10px;
+      color:#ff5a5a;
       font-size:12px;
-      color:rgba(255,140,140,.95);
       display:none;
-      line-height:1.4;
     }
   </style>
 </head>
@@ -132,57 +149,74 @@
         <div class="bar" id="bar"></div>
       </div>
 
-      <div class="eta" id="eta">0% — reviewing data</div>
-      <div class="error" id="err"></div>
+      <div class="eta">
+        <span id="etaText">0% — reviewing data</span>
+        <span id="statusText" style="color:rgba(255,255,255,.38)">syncing…</span>
+      </div>
+
+      <div class="err" id="err"></div>
     </div>
   </main>
 
   <script>
     // ===== CONFIG =====
-    const TOTAL_TIME = 45000;                 // 45 seconds
-    const NEXT_PAGE = "results.html";         // your results page
-    const ANSWERS_KEY = "mn8_answers";         // where Q pages saved answers
-    const SUMMARY_KEY = "mn8_summary";         // where we store AI output
+    const TOTAL_TIME_MS = 45000;               // your “45 sec” target
+    const RESULTS_PAGE = "results.html";       // final page
+    const FALLBACK_BACK = "q5.html";           // if answers missing, send them back here (change if needed)
 
+    // Steps for the UI text
+    const steps = [
+      { t: 0,     title: "Analyzing patterns",            line: "Reading your answers and mapping behavioral signals." },
+      { t: 12000, title: "Identifying resistance points", line: "Locating where momentum breaks and why it repeats." },
+      { t: 26000, title: "Checking consistency signals",  line: "Comparing intent vs execution tendencies." },
+      { t: 38000, title: "Finalizing diagnostic",         line: "Preparing your clarity summary." }
+    ];
+
+    // ===== ELEMENTS =====
     const bar = document.getElementById("bar");
-    const eta = document.getElementById("eta");
+    const etaText = document.getElementById("etaText");
+    const statusText = document.getElementById("statusText");
     const title = document.getElementById("title");
     const line = document.getElementById("line");
     const err = document.getElementById("err");
 
-    const steps = [
-      { t: 0,     title:"Analyzing patterns",            line:"Reading your answers and mapping behavioral signals." },
-      { t: 12000, title:"Identifying resistance points", line:"Locating where momentum breaks and why it repeats." },
-      { t: 26000, title:"Checking consistency signals",  line:"Comparing intent vs execution tendencies." },
-      { t: 38000, title:"Finalizing diagnostic",         line:"Preparing your clarity summary." }
-    ];
+    // ===== HELPERS =====
+    function getAnswersFromStorage() {
+      // Expecting you stored answers in localStorage as you go.
+      // If your key is different, change it here.
+      const raw = localStorage.getItem("mn8_answers");
+      if (!raw) return null;
 
-    const start = Date.now();
-    let done = false;
-
-    function setPercent(percent, label){
-      const p = Math.max(0, Math.min(100, Math.round(percent)));
-      bar.style.width = p + "%";
-      eta.textContent = `${p}% — ${label}`;
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed;
+      } catch {
+        return null;
+      }
     }
 
-    function showError(message){
+    function missingKeys(answers) {
+      const req = ["q1","q2","q3","q4","q5"];
+      return req.filter(k => !answers || !answers[k] || String(answers[k]).trim().length === 0);
+    }
+
+    function setError(message) {
       err.style.display = "block";
       err.textContent = message;
     }
 
-    // 1) Progress animation (independent from API)
-    function tick(){
-      if (done) return;
+    // ===== UI PROGRESS (runs regardless of API) =====
+    const start = Date.now();
+    let uiDone = false;
 
+    function uiTick() {
       const elapsed = Date.now() - start;
+      const p = Math.min(1, elapsed / TOTAL_TIME_MS);
+      const percent = Math.floor(p * 100);
 
-      // Smooth progress to 90% while waiting
-      const target = 90;
-      const p = Math.min(target, (elapsed / TOTAL_TIME) * 100);
-      setPercent(p, "reviewing data");
+      bar.style.width = percent + "%";
+      etaText.textContent = `${percent}% — reviewing data`;
 
-      // Update text phase
       for (let i = steps.length - 1; i >= 0; i--) {
         if (elapsed >= steps[i].t) {
           title.textContent = steps[i].title;
@@ -191,21 +225,22 @@
         }
       }
 
-      requestAnimationFrame(tick);
+      if (percent >= 100) uiDone = true;
+
+      if (!uiDone) requestAnimationFrame(uiTick);
     }
 
-    // 2) API call ONCE
-    async function runDiagnostic(){
-      const raw = localStorage.getItem(ANSWERS_KEY);
-      if (!raw) {
-        showError("Missing answers. Go back and complete the diagnostic.");
-        return;
-      }
+    // ===== API CALL (runs ONCE) =====
+    async function runDiagnosticOnce() {
+      statusText.textContent = "processing…";
 
-      let answers;
-      try { answers = JSON.parse(raw); }
-      catch {
-        showError("Answers are corrupted. Go back and try again.");
+      const answers = getAnswersFromStorage();
+
+      const missing = missingKeys(answers);
+      if (missing.length) {
+        statusText.textContent = "missing answers";
+        setError("Missing answers. Go back and complete the diagnostic.");
+        setTimeout(() => { window.location.href = FALLBACK_BACK; }, 1200);
         return;
       }
 
@@ -219,27 +254,35 @@
         const data = await r.json().catch(() => ({}));
 
         if (!r.ok) {
-          showError(data?.error || "Server error. Try again.");
+          statusText.textContent = "error";
+          setError((data && data.error) ? data.error : "Server error. Please try again.");
           return;
         }
 
-        // Store and finish
-        localStorage.setItem(SUMMARY_KEY, JSON.stringify(data));
-        done = true;
-        setPercent(100, "complete");
+        // Save the AI output for results page boxes
+        localStorage.setItem("mn8_summary", JSON.stringify(data));
 
-        setTimeout(() => {
-          window.location.href = NEXT_PAGE;
-        }, 450);
+        statusText.textContent = "ready";
+
+        // If UI isn’t finished yet, wait until it is (feels premium)
+        const wait = () => {
+          if (uiDone) {
+            window.location.href = RESULTS_PAGE;
+            return;
+          }
+          requestAnimationFrame(wait);
+        };
+        wait();
 
       } catch (e) {
-        showError("Network error. Check your connection and try again.");
+        statusText.textContent = "offline";
+        setError("Network error. Please refresh and try again.");
       }
     }
 
-    // Start
-    tick();
-    runDiagnostic();
+    // Start both:
+    uiTick();
+    runDiagnosticOnce();
   </script>
 </body>
 </html>
