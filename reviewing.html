@@ -20,7 +20,6 @@
       --accent:#632f96;
       --radius:34px;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
 
@@ -133,6 +132,15 @@
       line-height:1.4;
       white-space:pre-line;
     }
+
+    .hint{
+      margin-top:10px;
+      color:rgba(255,255,255,.45);
+      font-size:12px;
+      display:none;
+      line-height:1.4;
+      white-space:pre-line;
+    }
   </style>
 </head>
 
@@ -157,17 +165,26 @@
       </div>
 
       <div class="err" id="err"></div>
+      <div class="hint" id="hint"></div>
     </div>
   </main>
 
   <script>
     // ===== CONFIG =====
     const STORAGE_KEY = "mn8_answers";
+    const SUMMARY_KEY = "mn8_summary";
     const TOTAL_TIME_MS = 45000;
     const RESULTS_PAGE = "results.html";
     const FALLBACK_BACK = "q5.html";
-
     const REQUIRED = ["q1","q2","q3","q4","q5"];
+
+    // Prevent double-run on bfcache/back/refresh quirks
+    if (sessionStorage.getItem("mn8_reviewing_ran") === "1") {
+      // If already have summary, go straight through
+      const s = localStorage.getItem(SUMMARY_KEY);
+      if (s) window.location.href = RESULTS_PAGE;
+    }
+    sessionStorage.setItem("mn8_reviewing_ran", "1");
 
     const steps = [
       { t: 0,     title: "Analyzing patterns",            line: "Reading your answers and mapping behavioral signals." },
@@ -182,10 +199,15 @@
     const title = document.getElementById("title");
     const line = document.getElementById("line");
     const err = document.getElementById("err");
+    const hint = document.getElementById("hint");
 
     function setError(message) {
       err.style.display = "block";
       err.textContent = message;
+    }
+    function setHint(message) {
+      hint.style.display = "block";
+      hint.textContent = message;
     }
 
     function getAnswers() {
@@ -198,7 +220,7 @@
       return REQUIRED.filter(k => !answers || !answers[k] || String(answers[k]).trim().length === 0);
     }
 
-    // ===== PROGRESS (time-based, guaranteed to finish) =====
+    // ===== PROGRESS (always completes) =====
     const start = performance.now();
     let uiDone = false;
 
@@ -233,11 +255,14 @@
 
       if (missing.length) {
         statusText.textContent = "missing answers";
-        setError(
-          "Missing answers:\n- " + missing.join("\n- ") +
-          "\n\nFix: open console and run:\nlocalStorage.getItem(\"mn8_answers\")\n\n(You are either not saving Q1, or you are on a different domain.)"
+        setError("Missing answers:\n- " + missing.join("\n- "));
+        setHint(
+          "Fix this first.\n" +
+          `1) Go back: ${FALLBACK_BACK}\n` +
+          `2) In console check: localStorage.getItem("${STORAGE_KEY}")\n` +
+          "If q1/q4 are missing, your Q pages aren’t saving correctly."
         );
-        setTimeout(() => { window.location.href = FALLBACK_BACK; }, 1600);
+        // NO AUTO REDIRECT. Let them read the error.
         return;
       }
 
@@ -245,21 +270,36 @@
         const r = await fetch("/api/diagnostic", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers })
+          body: JSON.stringify({ answers }),
+          cache: "no-store"
         });
 
         const data = await r.json().catch(() => ({}));
 
         if (!r.ok) {
           statusText.textContent = "error";
-          setError((data && data.error) ? data.error : "Server error. Please refresh and try again.");
+
+          // Show the most useful message possible:
+          const pretty =
+            (data && data.details && data.details.error && data.details.error.message)
+              ? data.details.error.message
+              : (data && data.error ? data.error : "Server error.");
+
+          setError(pretty);
+
+          // Add debug hint so you can see the real issue immediately
+          setHint(
+            "Debug:\n" +
+            `status: ${r.status}\n` +
+            "Open DevTools → Network → /api/diagnostic → Response\n" +
+            "If it says invalid_api_key / insufficient_quota / model_not_found — that’s the real problem."
+          );
           return;
         }
 
-        localStorage.setItem("mn8_summary", JSON.stringify(data));
+        localStorage.setItem(SUMMARY_KEY, JSON.stringify(data));
         statusText.textContent = "ready";
 
-        // wait for the bar to finish (premium)
         const wait = () => {
           if (uiDone) {
             window.location.href = RESULTS_PAGE;
@@ -271,7 +311,8 @@
 
       } catch (e) {
         statusText.textContent = "offline";
-        setError("Network error. Please refresh and try again.");
+        setError("Network error.");
+        setHint("Refresh. If it keeps failing, your deployment or environment variables are wrong.");
       }
     })();
   </script>
