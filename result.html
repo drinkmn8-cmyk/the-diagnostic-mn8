@@ -38,29 +38,21 @@
       background-attachment:fixed;
       color:var(--text);
       font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
-
       display:flex;
       justify-content:center;
-
-      /* more “canvas breathing room” like your screenshot */
-      padding:64px 26px 84px;
+      padding:56px 24px 76px; /* bottom padding so nothing feels stuck */
     }
 
     .wrap{
       width:100%;
-      max-width:1180px;
+      max-width:1200px;
     }
 
-    /*
-      GRID = EXACT FEEL
-      - Left column wide
-      - Right column narrow
-      - A dedicated last row (1fr) so the button can sit lower naturally
-    */
+    /* Desktop grid matches your screenshot */
     .grid{
       display:grid;
       grid-template-columns: 1.55fr 0.78fr;
-      grid-template-rows: auto auto auto 1fr;
+      grid-template-rows: auto auto auto;
       gap:28px 34px;
       align-items:start;
     }
@@ -74,12 +66,13 @@
       overflow:hidden;
     }
 
-    .inner{
+    .cardInner{
       padding:28px 30px;
     }
 
     .title{
       margin:0 0 16px 0;
+      font-size:20px;
       font-weight:700;
       letter-spacing:.08em;
       text-transform:uppercase;
@@ -92,32 +85,31 @@
       color:rgba(255,255,255,.86);
     }
 
-    /* =========================
-       3 CARD TYPES (THE FIX)
-       ========================= */
+    /* ---- Card types (fixes "everything same size") ---- */
 
-    /* 1) HERO (Core Diagnosis) — bigger, thicker, premium */
+    /* HERO (Core) */
     .hero{
       border-radius:44px;
     }
-    .hero .inner{
-      padding:40px 44px 44px;
-      min-height:320px; /* stops “slim” */
+    .hero .cardInner{
+      padding:42px 44px 44px;
+      min-height:300px; /* avoids slim look */
     }
     .hero .title{
       font-size:30px;
       margin-bottom:22px;
+      letter-spacing:.09em;
     }
     .hero .body{
       font-size:18px;
-      line-height:1.9;
-      max-width:60ch;
+      line-height:1.85;
+      max-width:58ch;
     }
 
-    /* 2) WIDE (Consequence + Hidden Mechanism) — slim height but not skinny */
-    .wide .inner{
-      padding:30px 38px 32px;
-      min-height:190px; /* keeps consistent thickness */
+    /* WIDE (Consequence + Hidden) */
+    .wide .cardInner{
+      padding:30px 36px 32px;
+      min-height:190px; /* avoids slim look */
     }
     .wide .title{
       font-size:22px;
@@ -125,20 +117,20 @@
     }
     .wide .body{
       font-size:15px;
-      line-height:1.95;
-      max-width:98ch;
+      line-height:1.9;
+      max-width:96ch;
       color:rgba(255,255,255,.78);
     }
 
-    /* 3) SIDE (Closing Insight) — narrow column, tighter typography */
+    /* SIDE (Closing) */
     .side{
-      justify-self:end;
       max-width:360px;
-      border-radius:36px;
+      justify-self:end;
+      border-radius:30px;
     }
-    .side .inner{
+    .side .cardInner{
       padding:28px 26px 30px;
-      min-height:265px;
+      min-height:260px;
     }
     .side .title{
       font-size:20px;
@@ -146,58 +138,49 @@
     }
     .side .body{
       font-size:13px;
-      line-height:1.95;
-      max-width:30ch; /* forces the same wraps as your screenshot */
+      line-height:1.9;
+      max-width:30ch;
       color:rgba(255,255,255,.72);
     }
 
-    /* =========================
-       PLACEMENT (MATCH REF)
-       ========================= */
+    /* Placement */
     .core{ grid-column:1; grid-row:1; }
     .closing{ grid-column:2; grid-row:1; }
-
     .consequence{ grid-column:1; grid-row:2; }
     .mechanism{ grid-column:1; grid-row:3; }
 
-    /* CTA lives in RIGHT column, LAST row, pushed down */
+    /* CTA in the empty right side, like your screenshot */
     .cta{
       grid-column:2;
-      grid-row:4;
+      grid-row:3;
       display:flex;
       justify-content:flex-end;
-      align-items:flex-end;      /* pins it to the bottom of that row */
-      padding-right:18px;        /* matches your “inset” */
-      padding-bottom:0px;       /* extra breathing room */
-      margin-top:12px;
+      align-items:flex-start;
+      padding-top:28px;        /* pushes button LOWER */
+      padding-right:18px;      /* right breathing room */
     }
 
     .btn{
       appearance:none;
       border:0;
       cursor:pointer;
-
       min-width:340px;
       height:60px;
-
       border-radius:24px;
       background:rgba(106,56,163,1);
       color:rgba(10,10,14,.92);
-
       font-size:18px;
       font-weight:800;
       letter-spacing:.02em;
-
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
       transition:opacity .12s ease, transform .08s ease;
     }
-    .btn:hover{ opacity:.92; }
-    .btn:active{ transform:translateY(1px); }
+    .btn:hover{opacity:.92}
+    .btn:active{transform:translateY(1px)}
 
-    /* =========================
-       RESPONSIVE (STACK CLEAN)
-       ========================= */
+    /* ---- Mobile: clean, premium stack ---- */
     @media (max-width:980px){
-      body{ padding:34px 16px 44px; }
+      body{ padding:34px 16px 46px; }
 
       .grid{
         grid-template-columns:1fr;
@@ -205,26 +188,39 @@
         gap:18px;
       }
 
-      .side{ max-width:none; justify-self:stretch; }
+      .side{
+        max-width:none;
+        justify-self:stretch;
+        border-radius:34px;
+      }
       .side .body{ max-width:none; }
+
+      .hero{ border-radius:34px; }
+      .hero .cardInner{
+        min-height:auto;
+        padding:32px 26px 34px;
+      }
+      .hero .title{ font-size:24px; }
+      .hero .body{ font-size:16px; line-height:1.75; }
+
+      .wide .cardInner{
+        min-height:auto;
+        padding:26px 26px 28px;
+      }
 
       .cta{
         grid-column:1;
         grid-row:auto;
         justify-content:stretch;
-        align-items:stretch;
+        padding-top:10px;
         padding-right:0;
-        padding-bottom:0;
-        margin-top:6px;
       }
-
-      .btn{ width:100%; min-width:0; }
-
-      .hero .inner{ min-height:auto; padding:32px 26px 34px; }
-      .hero .title{ font-size:24px; }
-      .hero .body{ font-size:16px; line-height:1.85; }
-
-      .wide .inner{ min-height:auto; padding:26px 26px 28px; }
+      .btn{
+        width:100%;
+        min-width:0;
+        height:58px;
+        border-radius:22px;
+      }
     }
   </style>
 </head>
@@ -232,10 +228,9 @@
 <body>
   <main class="wrap">
     <section class="grid">
-
-      <!-- CORE (HERO) -->
+      <!-- CORE -->
       <div class="card hero core">
-        <div class="inner">
+        <div class="cardInner">
           <h2 class="title">Core Diagnosis</h2>
           <p class="body" id="coreText">Your responses point to a clear pattern.
 Progress didn’t fade gradually — it stopped after a break.
@@ -243,9 +238,9 @@ Since then, starting has felt heavier than it used to.</p>
         </div>
       </div>
 
-      <!-- CLOSING (SIDE) -->
+      <!-- CLOSING -->
       <div class="card side closing">
-        <div class="inner">
+        <div class="cardInner">
           <h2 class="title">Closing Insight</h2>
           <p class="body" id="closingText">This didn’t fail because you lacked discipline.
 It failed because nothing was holding execution in place.
@@ -253,9 +248,9 @@ Until structure is installed, effort will always feel optional.</p>
         </div>
       </div>
 
-      <!-- CONSEQUENCE (WIDE) -->
+      <!-- CONSEQUENCE -->
       <div class="card wide consequence">
-        <div class="inner">
+        <div class="cardInner">
           <h2 class="title">Consequence</h2>
           <p class="body" id="consequenceText">Right now, execution depends on how you feel.
 When energy drops or doubt appears, nothing holds the action in place.
@@ -263,9 +258,9 @@ Each restart without structure makes the pause come sooner next time.</p>
         </div>
       </div>
 
-      <!-- MECHANISM (WIDE) -->
+      <!-- MECHANISM -->
       <div class="card wide mechanism">
-        <div class="inner">
+        <div class="cardInner">
           <h2 class="title">Hidden Mechanism</h2>
           <p class="body" id="mechanismText">When that break happened, your system adapted.
 It learned to slow you down before commitment, not during effort.
@@ -273,17 +268,16 @@ This isn’t hesitation. It’s protection against another restart that doesn’
         </div>
       </div>
 
-      <!-- CTA (LOWER RIGHT) -->
+      <!-- CTA (desktop: right side, lower) -->
       <div class="cta">
         <button class="btn" id="continueBtn">Continue</button>
       </div>
-
     </section>
   </main>
 
   <script>
-    const SUMMARY_KEY = "mn8_summary";  // must match reviewing.html
-    const NEXT_PAGE = "index.html";     // change if needed
+    const SUMMARY_KEY = "mn8_summary";   // must match reviewing.html
+    const NEXT_PAGE = "index.html";      // change if needed
 
     function safeParse(raw) {
       try { return JSON.parse(raw); } catch { return null; }
