@@ -5,14 +5,10 @@ export default async function handler(req, res) {
 
   try {
     const { answers } = req.body || {};
-    if (!answers) {
-      return res.status(400).json({ error: "Missing answers" });
-    }
+    if (!answers) return res.status(400).json({ error: "Missing answers" });
 
     const prompt = `
-You are MN8.
-
-Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
+You are MN8. Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
 
 Return ONLY valid JSON with exactly these keys:
 core, mechanism, consequence, closing
@@ -22,16 +18,16 @@ Rules:
 - mechanism: 2–4 sentences
 - consequence: 2–4 sentences
 - closing: 2–3 sentences, lands like a decision (not a thought)
-- No bullet points
-- No markdown
-- No extra keys
+- No bullet points.
+- No extra keys.
+- No markdown.
 
 User answers:
-q1: ${answers.q1}
-q2: ${answers.q2}
-q3: ${answers.q3}
-q4: ${answers.q4}
-q5: ${answers.q5}
+q1: ${answers.q1 || ""}
+q2: ${answers.q2 || ""}
+q3: ${answers.q3 || ""}
+q4: ${answers.q4 || ""}
+q5: ${answers.q5 || ""}
 `.trim();
 
     const r = await fetch("https://api.openai.com/v1/responses", {
@@ -42,63 +38,60 @@ q5: ${answers.q5}
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        input: [
-          {
-            role: "user",
-            content: [{ type: "text", text: prompt }]
-          }
-        ],
+        input: prompt,
+
+        // ✅ Correct way now (replaces old response_format)
         text: {
-          format: "json"
-        }
+          format: {
+            type: "json_schema",
+            name: "mn8_diagnostic",
+            schema: {
+              type: "object",
+              additionalProperties: false,
+              required: ["core", "mechanism", "consequence", "closing"],
+              properties: {
+                core: { type: "string" },
+                mechanism: { type: "string" },
+                consequence: { type: "string" },
+                closing: { type: "string" },
+              },
+            },
+            strict: true,
+          },
+        },
       }),
     });
 
-    const data = await r.json();
+    const data = await r.json().catch(() => ({}));
 
     if (!r.ok) {
       return res.status(500).json({
         error: "OpenAI request failed",
-        details: data
+        details: data,
       });
     }
 
-    const text =
-      data.output_text ||
-      data.output?.[0]?.content?.[0]?.text;
-
-    if (!text) {
-      return res.status(500).json({
-        error: "No text returned from model",
-        raw: data
-      });
-    }
+    // ✅ Do NOT touch data.output[0].content[0].type etc.
+    // That’s how you got the “Invalid value: 'text' …” garbage.
+    const text = (data.output_text || "").trim();
 
     let parsed;
     try {
       parsed = JSON.parse(text);
     } catch {
       return res.status(500).json({
-        error: "Invalid JSON from model",
-        raw: text
+        error: "Model did not return valid JSON",
+        raw: text,
       });
     }
 
-    const { core, mechanism, consequence, closing } = parsed;
-
+    const { core, mechanism, consequence, closing } = parsed || {};
     if (!core || !mechanism || !consequence || !closing) {
-      return res.status(500).json({
-        error: "Missing required fields",
-        parsed
-      });
+      return res.status(500).json({ error: "Missing required fields", parsed });
     }
 
     return res.status(200).json({ core, mechanism, consequence, closing });
-
   } catch (err) {
-    return res.status(500).json({
-      error: "Server error",
-      details: String(err)
-    });
+    return res.status(500).json({ error: "Server error", details: String(err) });
   }
 }
