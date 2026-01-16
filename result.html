@@ -180,23 +180,49 @@
       display:flex;
     }
 
-    .btn{
-      appearance:none;
-      border:0;
-      cursor:pointer;
-      min-width:340px;
-      height:60px;
-      border-radius:24px;
-      background:rgba(106,56,163,1);
-      color:rgba(10,10,14,.92);
-      font-size:18px;
-      font-weight:800;
-      letter-spacing:.02em;
-      transition:opacity .12s ease, transform .08s ease;
-      box-shadow: 0 18px 60px rgba(106,56,163,.20);
-    }
-    .btn:hover{opacity:.92}
-    .btn:active{transform:translateY(1px)}
+.btn{
+  appearance:none;
+  border:0;
+  cursor:pointer;
+
+  min-width:340px;
+  height:60px;
+  border-radius:24px;
+
+  /* SINGLE COLOR SYSTEM */
+  background: linear-gradient(
+    180deg,
+    rgba(124, 71, 178, 0.95),
+    rgba(98, 50, 152, 0.95)
+  );
+
+  color: rgba(240, 230, 255, 0.92); /* soft lavender-white, NOT grey */
+
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:.01em;
+
+  box-shadow:
+    0 12px 40px rgba(99,47,150,.45),
+    inset 0 1px 0 rgba(255,255,255,.08);
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    opacity .15s ease;
+}
+
+.btn:hover{
+  opacity:.96;
+}
+
+.btn:active{
+  transform:translateY(1px);
+  box-shadow:
+    0 8px 28px rgba(99,47,150,.35),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
 
     /* =========================================================
        MOBILE: expensive Apple-minimal
