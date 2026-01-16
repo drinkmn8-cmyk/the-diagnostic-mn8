@@ -141,6 +141,15 @@
       max-width:30ch; /* forces the same wrap */
       color:rgba(255,255,255,.72);
     }
+/* CTA lives in right column, under Closing Insight */
+.cta{
+  grid-column: 2;
+  grid-row: 3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 32px; /* THIS is the padding you’re asking about */
+}
 
     /* Placement */
     .core{ grid-column:1; grid-row:1; }
@@ -244,9 +253,9 @@ This isn’t hesitation. It’s protection against another restart that doesn’
       </div>
 
       <!-- BUTTON SLOT -->
-      <div class="ctaSlot">
-        <button class="btn" id="continueBtn">Continue</button>
-      </div>
+<div class="cta">
+  <button class="btn" id="continueBtn">Continue</button>
+</div>
 
     </section>
   </main>
