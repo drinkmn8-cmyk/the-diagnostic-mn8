@@ -1,221 +1,400 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MN8 Diagnostic — Results</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MN8 Diagnostic — Results</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <!-- LATO -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --bg:#000;
-  --card:#0f0f14;
-  --hair:rgba(255,255,255,.08);
-  --text:rgba(255,255,255,.9);
-  --muted:rgba(255,255,255,.65);
-  --accent:#632f96;
-  --btn:#6a38a3;
-  --radius:34px;
-}
+  <style>
+    :root{
+      --bg:#000;
+      --card:#0f0f14;
+      --hair:rgba(255,255,255,.08);
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:
-    radial-gradient(900px 520px at 50% 0%, rgba(99,47,150,.45), transparent 62%),
-    radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), transparent 70%),
-    var(--bg);
-  color:var(--text);
-  font-family:"Lato",system-ui;
-}
+      --text:rgba(255,255,255,.92);
+      --text2:rgba(255,255,255,.76);
 
-.wrap{
-  max-width:1200px;
-  margin:0 auto;
-  padding:64px 24px 96px;
-}
+      --accent:#632f96;
+      --btn:#6a38a3;
 
-/* ===== DESKTOP GRID ===== */
-.grid{
-  display:grid;
-  grid-template-columns: 1.55fr .75fr;
-  gap:32px 36px;
-}
+      --radius:34px;
+      --radiusBig:42px;
 
-.card{
-  background:rgba(15,15,20,.95);
-  border:1px solid var(--hair);
-  border-radius:var(--radius);
-  box-shadow:0 40px 160px rgba(0,0,0,.7);
-}
+      --shadow: 0 34px 160px rgba(0,0,0,.72);
+      --shadowSoft: 0 18px 80px rgba(0,0,0,.55);
 
-.inner{
-  padding:36px 40px;
-}
+      --glass: rgba(255,255,255,.035);
+    }
 
-.title{
-  margin:0 0 18px;
-  font-size:18px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:rgba(185,145,235,.9);
-}
+    *{box-sizing:border-box}
+    html,body{height:100%}
 
-.body{
-  font-size:16px;
-  line-height:1.9;
-  white-space:pre-wrap;
-}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 50% 0%, rgba(99,47,150,.45), rgba(99,47,150,0) 62%),
+        radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
+        var(--bg);
+      background-attachment:fixed;
+      color:var(--text);
+      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      display:flex;
+      justify-content:center;
+      padding:56px 24px 70px;
+    }
 
-/* Card roles */
-.core .inner{min-height:320px}
-.core .body{max-width:60ch}
+    .wrap{
+      width:100%;
+      max-width:1200px;
+    }
 
-.side{
-  max-width:360px;
-  justify-self:end;
-}
-.side .body{
-  font-size:13px;
-  line-height:1.85;
-  max-width:28ch;
-  color:var(--muted);
-}
+    /* ===== DESKTOP GRID ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.55fr 0.78fr;
+      gap:28px 34px;
+      align-items:start;
+    }
 
-.wide .inner{min-height:200px}
+    .card{
+      background:rgba(15,15,20,.92);
+      border:1px solid var(--hair);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
 
-/* Placement */
-.core{grid-column:1;grid-row:1}
-.side{grid-column:2;grid-row:1}
-.consequence{grid-column:1;grid-row:2}
-.mechanism{grid-column:1;grid-row:3}
+    /* subtle premium depth */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 240px at 18% 0%, rgba(255,255,255,.05), rgba(255,255,255,0) 60%),
+        radial-gradient(700px 220px at 90% 110%, rgba(99,47,150,.10), rgba(99,47,150,0) 60%);
+      opacity:.9;
+    }
 
-/* Button desktop */
-.cta{
-  grid-column:2;
-  grid-row:3;
-  display:flex;
-  justify-content:flex-end;
-  align-items:flex-end;
-  padding-top:48px;
-}
+    .inner{
+      position:relative;
+      padding:28px 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    }
 
-button{
-  border:0;
-  background:var(--btn);
-  color:#0b0710;
-  font-weight:900;
-  font-size:18px;
-  height:60px;
-  min-width:320px;
-  border-radius:26px;
-  cursor:pointer;
-}
+    .title{
+      margin:0 0 14px 0;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(185,145,235,.82);
+      font-size:20px;
+    }
 
-/* ===== MOBILE REBUILD ===== */
-@media(max-width:900px){
-  .wrap{padding:32px 18px 48px}
+    .body{
+      margin:0;
+      white-space:pre-wrap;
+      font-size:15px;
+      line-height:1.9;
+      color:var(--text2);
+    }
 
-  .grid{
-    grid-template-columns:1fr;
-    gap:18px;
-  }
+    /* ===== Card Types (stop “all same size” issue) ===== */
 
-  .side{
-    max-width:none;
-    justify-self:stretch;
-  }
+    /* HERO (Core) */
+    .hero{
+      border-radius:var(--radiusBig);
+    }
+    .hero .inner{
+      padding:38px 40px 42px;
+      min-height:300px;
+    }
+    .hero .title{
+      font-size:30px;
+      margin-bottom:22px;
+    }
+    .hero .body{
+      font-size:18px;
+      line-height:1.85;
+      color:rgba(255,255,255,.88);
+      max-width:60ch;
+    }
 
-  .inner{
-    padding:26px 22px;
-  }
+    /* WIDE (Consequence + Mechanism) */
+    .wide .inner{
+      padding:30px 36px 32px;
+      min-height:185px;
+    }
+    .wide .title{
+      font-size:22px;
+      margin-bottom:18px;
+    }
+    .wide .body{
+      max-width:100ch;
+    }
 
-  .title{
-    font-size:15px;
-    letter-spacing:.1em;
-  }
+    /* SIDE (Closing) */
+    .side{
+      justify-self:end;
+      max-width:360px;
+      border-radius:32px;
+      box-shadow:var(--shadowSoft);
+      outline: 1px solid rgba(99,47,150,.22); /* subtle premium edge */
+    }
+    .side .inner{
+      padding:28px 26px 30px;
+      min-height:260px;
+      background:
+        radial-gradient(520px 260px at 20% 0%, rgba(99,47,150,.14), rgba(99,47,150,0) 60%),
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    }
+    .side .body{
+      font-size:13px;
+      line-height:1.9;
+      max-width:30ch;
+      color:rgba(255,255,255,.72);
+    }
 
-  .body{
-    font-size:15px;
-    line-height:1.8;
-  }
+    /* Placement */
+    .core{ grid-column:1; grid-row:1; }
+    .closing{ grid-column:2; grid-row:1; }
+    .consequence{ grid-column:1; grid-row:2; }
+    .mechanism{ grid-column:1; grid-row:3; }
 
-  /* Mobile visual hierarchy */
-  .core .inner{min-height:auto}
-  .side{order:2}
-  .consequence{order:3}
-  .mechanism{order:4}
+    /* ===== CTA on DESKTOP: right side, aligned with mechanism like your reference ===== */
+    .cta{
+      grid-column:2;
+      grid-row:3;
+      justify-self:end;
+      align-self:end;
+      padding-right:10px;
+      padding-bottom:18px; /* lower */
+      display:flex;
+    }
 
-  /* Closing becomes highlight */
-  .side{
-    border:1px solid rgba(99,47,150,.4);
-    box-shadow:0 0 0 1px rgba(99,47,150,.25), 0 30px 80px rgba(99,47,150,.35);
-  }
+    .btn{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      min-width:340px;
+      height:60px;
+      border-radius:24px;
+      background:rgba(106,56,163,1);
+      color:rgba(10,10,14,.92);
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:.02em;
+      transition:opacity .12s ease, transform .08s ease;
+      box-shadow: 0 18px 60px rgba(106,56,163,.20);
+    }
+    .btn:hover{opacity:.92}
+    .btn:active{transform:translateY(1px)}
 
-  .cta{
-    grid-column:1;
-    padding-top:24px;
-    justify-content:center;
-  }
+    /* =========================================================
+       MOBILE: expensive Apple-minimal
+       - single column
+       - readable type
+       - clean spacing
+       - sticky CTA bar
+       ========================================================= */
+    @media (max-width: 900px){
+      body{
+        padding:22px 14px 120px;
+      }
 
-  button{
-    width:100%;
-    min-width:0;
-  }
-}
-</style>
+      .grid{
+        grid-template-columns: 1fr;
+        gap:14px;
+      }
+
+      .core,.closing,.consequence,.mechanism,.cta{
+        grid-column:auto;
+        grid-row:auto;
+      }
+
+      .card{
+        border-radius:26px;
+        box-shadow: 0 18px 90px rgba(0,0,0,.60);
+      }
+
+      .inner{
+        padding:18px 16px 18px;
+      }
+
+      .title{
+        font-size:13px;
+        letter-spacing:.14em;
+        margin-bottom:12px;
+        color:rgba(200,165,255,.78);
+      }
+
+      .body{
+        font-size:16px;
+        line-height:1.85;
+        color:rgba(255,255,255,.82);
+      }
+
+      /* Remove “hero” bloat on mobile — make it premium + tight */
+      .hero{
+        border-radius:28px;
+      }
+      .hero .inner{
+        padding:20px 16px 20px;
+        min-height:auto;
+      }
+      .hero .title{
+        font-size:13px;
+        margin-bottom:12px;
+        letter-spacing:.14em;
+      }
+      .hero .body{
+        font-size:17px;
+        line-height:1.85;
+        max-width:none;
+      }
+
+      /* Closing should NOT be a tiny “side card” on mobile */
+      .side{
+        max-width:none;
+        justify-self:stretch;
+        outline:none;
+      }
+      .side .inner{
+        min-height:auto;
+        background:
+          radial-gradient(520px 260px at 20% 0%, rgba(99,47,150,.16), rgba(99,47,150,0) 60%),
+          linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      }
+      .side .body{
+        font-size:16px;
+        max-width:none;
+        color:rgba(255,255,255,.80);
+      }
+
+      .wide .inner{
+        padding:18px 16px 18px;
+        min-height:auto;
+      }
+      .wide .title{
+        font-size:13px;
+        margin-bottom:12px;
+      }
+
+      /* Sticky CTA bar (expensive app behavior) */
+      .cta{
+        position:fixed;
+        left:14px;
+        right:14px;
+        bottom:14px;
+        padding:12px;
+        border-radius:18px;
+        background: rgba(15,15,20,.72);
+        border:1px solid rgba(255,255,255,.10);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 18px 80px rgba(0,0,0,.65);
+        z-index:50;
+      }
+
+      .btn{
+        width:100%;
+        min-width:0;
+        height:56px;
+        border-radius:16px;
+        font-size:17px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<main class="wrap">
-<section class="grid">
+  <main class="wrap">
+    <section class="grid">
 
-<div class="card core">
-  <div class="inner">
-    <h2 class="title">Core Diagnosis</h2>
-    <p class="body" id="coreText">Loading…</p>
-  </div>
-</div>
+      <!-- CORE (HERO) -->
+      <div class="card hero core">
+        <div class="inner">
+          <h2 class="title">Core Diagnosis</h2>
+          <p class="body" id="coreText">Your responses point to a clear pattern.
+Progress didn’t fade gradually — it stopped after a break.
+Since then, starting has felt heavier than it used to.</p>
+        </div>
+      </div>
 
-<div class="card side">
-  <div class="inner">
-    <h2 class="title">Closing Insight</h2>
-    <p class="body" id="closingText">Loading…</p>
-  </div>
-</div>
+      <!-- CLOSING (SIDE on desktop, normal on mobile) -->
+      <div class="card side closing">
+        <div class="inner">
+          <h2 class="title">Closing Insight</h2>
+          <p class="body" id="closingText">This didn’t fail because you lacked discipline.
+It failed because nothing was holding execution in place.
+Until structure is installed, effort will always feel optional.</p>
+        </div>
+      </div>
 
-<div class="card wide consequence">
-  <div class="inner">
-    <h2 class="title">Consequence</h2>
-    <p class="body" id="consequenceText">Loading…</p>
-  </div>
-</div>
+      <!-- CONSEQUENCE (WIDE) -->
+      <div class="card wide consequence">
+        <div class="inner">
+          <h2 class="title">Consequence</h2>
+          <p class="body" id="consequenceText">Right now, execution depends on how you feel.
+When energy drops or doubt appears, nothing holds the action in place.
+Each restart without structure makes the pause come sooner next time.</p>
+        </div>
+      </div>
 
-<div class="card wide mechanism">
-  <div class="inner">
-    <h2 class="title">Hidden Mechanism</h2>
-    <p class="body" id="mechanismText">Loading…</p>
-  </div>
-</div>
+      <!-- MECHANISM (WIDE) -->
+      <div class="card wide mechanism">
+        <div class="inner">
+          <h2 class="title">Hidden Mechanism</h2>
+          <p class="body" id="mechanismText">When that break happened, your system adapted.
+It learned to slow you down before commitment, not during effort.
+This isn’t hesitation. It’s protection against another restart that doesn’t last.</p>
+        </div>
+      </div>
 
-<div class="cta">
-  <button id="continueBtn">Continue</button>
-</div>
+      <!-- CTA -->
+      <div class="cta">
+        <button class="btn" id="continueBtn">Continue</button>
+      </div>
 
-</section>
-</main>
+    </section>
+  </main>
 
-<script>
-const data = JSON.parse(localStorage.getItem("mn8_summary") || "{}");
-if(data.core) coreText.textContent = data.core;
-if(data.closing) closingText.textContent = data.closing;
-if(data.consequence) consequenceText.textContent = data.consequence;
-if(data.mechanism) mechanismText.textContent = data.mechanism;
+  <script>
+    const SUMMARY_KEY = "mn8_summary";
+    const NEXT_PAGE = "index.html"; // change if needed
 
-continueBtn.onclick = () => location.href = "index.html";
-</script>
+    function safeParse(raw) {
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const coreEl  = document.getElementById("coreText");
+      const mechEl  = document.getElementById("mechanismText");
+      const consEl  = document.getElementById("consequenceText");
+      const closeEl = document.getElementById("closingText");
+
+      const raw = localStorage.getItem(SUMMARY_KEY);
+      const summary = raw ? safeParse(raw) : null;
+
+      if (summary && typeof summary === "object") {
+        if (summary.core)        coreEl.textContent  = String(summary.core).trim();
+        if (summary.mechanism)   mechEl.textContent  = String(summary.mechanism).trim();
+        if (summary.consequence) consEl.textContent  = String(summary.consequence).trim();
+        if (summary.closing)     closeEl.textContent = String(summary.closing).trim();
+      }
+
+      document.getElementById("continueBtn").addEventListener("click", () => {
+        window.location.href = NEXT_PAGE;
+      });
+    });
+  </script>
 </body>
 </html>
