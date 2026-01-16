@@ -13,15 +13,16 @@
   <style>
     :root{
       --bg:#000;
+      --card:#0f0f14;
       --hair:rgba(255,255,255,.08);
 
       --text:rgba(255,255,255,.90);
+      --muted:rgba(255,255,255,.62);
+
       --accent:#632f96;
       --btn:#6a38a3;
 
       --radius:34px;
-      --cardBg:rgba(15,15,20,.92);
-      --shadow:0 34px 160px rgba(0,0,0,.72);
     }
 
     *{box-sizing:border-box}
@@ -35,47 +36,46 @@
         radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
         var(--bg);
       background-attachment:fixed;
-
       color:var(--text);
       font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
 
       display:flex;
       justify-content:center;
-      padding:56px 24px 72px;
+
+      /* more “canvas breathing room” like your screenshot */
+      padding:64px 26px 84px;
     }
 
     .wrap{
       width:100%;
-      max-width:1200px;
+      max-width:1180px;
     }
 
-    /* Grid that behaves like your screenshot:
-       - Left column wide
-       - Right column narrow
-       - Row heights create that “negative space” under Closing Insight for the CTA
+    /*
+      GRID = EXACT FEEL
+      - Left column wide
+      - Right column narrow
+      - A dedicated last row (1fr) so the button can sit lower naturally
     */
     .grid{
       display:grid;
       grid-template-columns: 1.55fr 0.78fr;
-      grid-template-rows: 340px 220px 220px;
+      grid-template-rows: auto auto auto 1fr;
       gap:28px 34px;
-      align-items:stretch;
+      align-items:start;
     }
 
-    /* Base card shell */
+    /* Base card */
     .card{
-      background:var(--cardBg);
+      background:rgba(15,15,20,.92);
       border:1px solid var(--hair);
       border-radius:var(--radius);
-      box-shadow:var(--shadow);
+      box-shadow:0 34px 160px rgba(0,0,0,.72);
       overflow:hidden;
     }
 
     .inner{
-      height:100%;
       padding:28px 30px;
-      display:flex;
-      flex-direction:column;
     }
 
     .title{
@@ -92,12 +92,17 @@
       color:rgba(255,255,255,.86);
     }
 
-    /* TYPE 1: HERO (Core Diagnosis) */
+    /* =========================
+       3 CARD TYPES (THE FIX)
+       ========================= */
+
+    /* 1) HERO (Core Diagnosis) — bigger, thicker, premium */
     .hero{
-      border-radius:42px;
+      border-radius:44px;
     }
     .hero .inner{
       padding:40px 44px 44px;
+      min-height:320px; /* stops “slim” */
     }
     .hero .title{
       font-size:30px;
@@ -105,13 +110,14 @@
     }
     .hero .body{
       font-size:18px;
-      line-height:1.85;
+      line-height:1.9;
       max-width:60ch;
     }
 
-    /* TYPE 2: WIDE (Consequence + Mechanism) */
+    /* 2) WIDE (Consequence + Hidden Mechanism) — slim height but not skinny */
     .wide .inner{
-      padding:30px 38px 34px;
+      padding:30px 38px 32px;
+      min-height:190px; /* keeps consistent thickness */
     }
     .wide .title{
       font-size:22px;
@@ -119,18 +125,20 @@
     }
     .wide .body{
       font-size:15px;
-      line-height:1.9;
-      max-width:100ch;
+      line-height:1.95;
+      max-width:98ch;
       color:rgba(255,255,255,.78);
     }
 
-    /* TYPE 3: SIDE (Closing Insight) */
+    /* 3) SIDE (Closing Insight) — narrow column, tighter typography */
     .side{
-      max-width:360px;
       justify-self:end;
+      max-width:360px;
+      border-radius:36px;
     }
     .side .inner{
       padding:28px 26px 30px;
+      min-height:265px;
     }
     .side .title{
       font-size:20px;
@@ -138,48 +146,56 @@
     }
     .side .body{
       font-size:13px;
-      line-height:1.9;
-      max-width:30ch; /* forces the same wrap */
+      line-height:1.95;
+      max-width:30ch; /* forces the same wraps as your screenshot */
       color:rgba(255,255,255,.72);
     }
 
-    /* Placement */
+    /* =========================
+       PLACEMENT (MATCH REF)
+       ========================= */
     .core{ grid-column:1; grid-row:1; }
     .closing{ grid-column:2; grid-row:1; }
+
     .consequence{ grid-column:1; grid-row:2; }
     .mechanism{ grid-column:1; grid-row:3; }
 
-    /* CTA slot: right column, row 3, anchored LOWER */
+    /* CTA lives in RIGHT column, LAST row, pushed down */
     .cta{
       grid-column:2;
-      grid-row:3;
-
+      grid-row:4;
       display:flex;
       justify-content:flex-end;
-      align-items:flex-end;
-
-      /* This is your “button padding + lower placement” */
-      padding:0 34px 14px 0;
+      align-items:flex-end;      /* pins it to the bottom of that row */
+      padding-right:18px;        /* matches your “inset” */
+      padding-bottom:10px;       /* extra breathing room */
+      margin-top:12px;
     }
 
     .btn{
       appearance:none;
       border:0;
       cursor:pointer;
+
       min-width:340px;
       height:60px;
+
       border-radius:24px;
-      background:var(--btn);
+      background:rgba(106,56,163,1);
       color:rgba(10,10,14,.92);
+
       font-size:18px;
       font-weight:800;
       letter-spacing:.02em;
+
       transition:opacity .12s ease, transform .08s ease;
     }
-    .btn:hover{opacity:.92}
-    .btn:active{transform:translateY(1px)}
+    .btn:hover{ opacity:.92; }
+    .btn:active{ transform:translateY(1px); }
 
-    /* Responsive */
+    /* =========================
+       RESPONSIVE (STACK CLEAN)
+       ========================= */
     @media (max-width:980px){
       body{ padding:34px 16px 44px; }
 
@@ -196,15 +212,19 @@
         grid-column:1;
         grid-row:auto;
         justify-content:stretch;
-        padding:0;
+        align-items:stretch;
+        padding-right:0;
+        padding-bottom:0;
+        margin-top:6px;
       }
 
       .btn{ width:100%; min-width:0; }
 
-      .hero .inner{ padding:32px 26px 34px; }
+      .hero .inner{ min-height:auto; padding:32px 26px 34px; }
       .hero .title{ font-size:24px; }
-      .hero .body{ font-size:16px; }
-      .wide .inner{ padding:26px 26px 28px; }
+      .hero .body{ font-size:16px; line-height:1.85; }
+
+      .wide .inner{ min-height:auto; padding:26px 26px 28px; }
     }
   </style>
 </head>
@@ -213,6 +233,7 @@
   <main class="wrap">
     <section class="grid">
 
+      <!-- CORE (HERO) -->
       <div class="card hero core">
         <div class="inner">
           <h2 class="title">Core Diagnosis</h2>
@@ -222,6 +243,7 @@ Since then, starting has felt heavier than it used to.</p>
         </div>
       </div>
 
+      <!-- CLOSING (SIDE) -->
       <div class="card side closing">
         <div class="inner">
           <h2 class="title">Closing Insight</h2>
@@ -231,6 +253,7 @@ Until structure is installed, effort will always feel optional.</p>
         </div>
       </div>
 
+      <!-- CONSEQUENCE (WIDE) -->
       <div class="card wide consequence">
         <div class="inner">
           <h2 class="title">Consequence</h2>
@@ -240,6 +263,7 @@ Each restart without structure makes the pause come sooner next time.</p>
         </div>
       </div>
 
+      <!-- MECHANISM (WIDE) -->
       <div class="card wide mechanism">
         <div class="inner">
           <h2 class="title">Hidden Mechanism</h2>
@@ -249,6 +273,7 @@ This isn’t hesitation. It’s protection against another restart that doesn’
         </div>
       </div>
 
+      <!-- CTA (LOWER RIGHT) -->
       <div class="cta">
         <button class="btn" id="continueBtn">Continue</button>
       </div>
@@ -257,8 +282,8 @@ This isn’t hesitation. It’s protection against another restart that doesn’
   </main>
 
   <script>
-    const SUMMARY_KEY = "mn8_summary";
-    const NEXT_PAGE = "index.html";
+    const SUMMARY_KEY = "mn8_summary";  // must match reviewing.html
+    const NEXT_PAGE = "index.html";     // change if needed
 
     function safeParse(raw) {
       try { return JSON.parse(raw); } catch { return null; }
