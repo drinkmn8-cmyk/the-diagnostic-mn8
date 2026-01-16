@@ -5,27 +5,26 @@ export default async function handler(req, res) {
 
   try {
     const { answers } = req.body || {};
-    if (!answers) return res.status(400).json({ error: "Missing answers" });
-
-    // Hard validation (prevents silent failures)
-    const required = ["q1", "q2", "q3", "q4", "q5"];
-    const missing = required.filter((k) => !answers[k] || String(answers[k]).trim().length === 0);
-    if (missing.length) {
-      return res.status(400).json({ error: "Missing answers", missing });
+    if (!answers) {
+      return res.status(400).json({ error: "Missing answers" });
     }
 
     const prompt = `
-Write a premium diagnostic summary in simple, direct language (5th–7th grade level).
+You are MN8.
 
-Return ONLY JSON with exactly these keys:
+Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
+
+Return ONLY valid JSON with exactly these keys:
 core, mechanism, consequence, closing
 
 Rules:
 - core: 2–4 sentences
 - mechanism: 2–4 sentences
 - consequence: 2–4 sentences
-- closing: 2–3 sentences, lands like a decision
-- No bullet points. No extra keys. No markdown.
+- closing: 2–3 sentences, lands like a decision (not a thought)
+- No bullet points
+- No markdown
+- No extra keys
 
 User answers:
 q1: ${answers.q1}
@@ -43,36 +42,63 @@ q5: ${answers.q5}
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        // FORCE JSON OUTPUT (this is the fix)
-        response_format: { type: "json_object" },
         input: [
-          { role: "system", content: "You are MN8. Output must be valid JSON only." },
-          { role: "user", content: prompt },
+          {
+            role: "user",
+            content: [{ type: "text", text: prompt }]
+          }
         ],
+        text: {
+          format: "json"
+        }
       }),
     });
 
     const data = await r.json();
 
     if (!r.ok) {
-      return res.status(500).json({ error: "OpenAI request failed", details: data });
+      return res.status(500).json({
+        error: "OpenAI request failed",
+        details: data
+      });
     }
 
-    // Responses API: best source is output_parsed when using json_object
-    const parsed = data.output_parsed;
+    const text =
+      data.output_text ||
+      data.output?.[0]?.content?.[0]?.text;
 
-    if (!parsed) {
-      return res.status(500).json({ error: "No parsed JSON returned", details: data });
+    if (!text) {
+      return res.status(500).json({
+        error: "No text returned from model",
+        raw: data
+      });
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      return res.status(500).json({
+        error: "Invalid JSON from model",
+        raw: text
+      });
     }
 
     const { core, mechanism, consequence, closing } = parsed;
 
     if (!core || !mechanism || !consequence || !closing) {
-      return res.status(500).json({ error: "Missing required fields", parsed });
+      return res.status(500).json({
+        error: "Missing required fields",
+        parsed
+      });
     }
 
     return res.status(200).json({ core, mechanism, consequence, closing });
+
   } catch (err) {
-    return res.status(500).json({ error: "Server error", details: String(err) });
+    return res.status(500).json({
+      error: "Server error",
+      details: String(err)
+    });
   }
 }
