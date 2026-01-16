@@ -1,31 +1,30 @@
+// api/diagnostic.js
+
 export default async function handler(req, res) {
+  // Always allow POST only
   if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
     const { answers } = req.body || {};
-    if (!answers) {
-      return res.status(400).json({ error: "Missing answers" });
-    }
+    if (!answers) return res.status(400).json({ error: "Missing answers" });
 
     const prompt = `
-Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade).
+You are MN8. Write a premium diagnostic summary in SIMPLE, direct language (5th–7th grade level).
 
-Return ONLY valid JSON with EXACTLY these keys:
-- core
-- mechanism
-- consequence
-- closing
+Return ONLY valid JSON with exactly these keys:
+core, mechanism, consequence, closing
 
 Rules:
 - core: 2–4 sentences
 - mechanism: 2–4 sentences
 - consequence: 2–4 sentences
-- closing: 2–3 sentences
-- No bullet points
-- No markdown
-- No extra text
+- closing: 2–3 sentences, lands like a decision (not a thought)
+- No bullet points.
+- No extra keys.
+- No markdown.
 
 User answers:
 q1: ${answers.q1 || ""}
@@ -35,7 +34,11 @@ q4: ${answers.q4 || ""}
 q5: ${answers.q5 || ""}
 `.trim();
 
-    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: "Missing OPENAI_API_KEY on server" });
+    }
+
+    const r = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,52 +46,55 @@ q5: ${answers.q5 || ""}
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        messages: [
-          { role: "system", content: "You output ONLY valid JSON. No explanations." },
-          { role: "user", content: prompt }
+        input: [
+          {
+            role: "user",
+            content: [{ type: "input_text", text: prompt }],
+          },
         ],
-        temperature: 0.4
+
+        // Force JSON output (this is the correct modern parameter)
+        text: { format: { type: "json_object" } },
+
+        temperature: 0.2,
+        max_output_tokens: 350,
       }),
     });
 
-    const data = await r.json();
+    const data = await r.json().catch(() => ({}));
 
     if (!r.ok) {
-      return res.status(r.status).json({
+      return res.status(500).json({
         error: "OpenAI request failed",
-        openai: data
+        details: data,
       });
     }
 
-    const text = data?.choices?.[0]?.message?.content;
-    if (!text) {
-      return res.status(500).json({ error: "Empty model response" });
-    }
+    // Responses API: safest extraction path
+    const out =
+      data.output?.find((o) => o.type === "message")?.content?.find((c) => c.type === "output_text")
+        ?.text ||
+      data.output_text ||
+      "";
 
     let parsed;
     try {
-      parsed = JSON.parse(text);
+      parsed = typeof out === "string" ? JSON.parse(out) : out;
     } catch {
       return res.status(500).json({
         error: "Model did not return valid JSON",
-        raw: text
+        raw: out,
+        debug: { received_type: typeof out },
       });
     }
 
-    const { core, mechanism, consequence, closing } = parsed;
+    const { core, mechanism, consequence, closing } = parsed || {};
     if (!core || !mechanism || !consequence || !closing) {
-      return res.status(500).json({
-        error: "Missing required fields",
-        parsed
-      });
+      return res.status(500).json({ error: "Missing required fields", parsed });
     }
 
     return res.status(200).json({ core, mechanism, consequence, closing });
-
   } catch (err) {
-    return res.status(500).json({
-      error: "Server error",
-      details: String(err)
-    });
+    return res.status(500).json({ error: "Server error", details: String(err) });
   }
 }
