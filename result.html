@@ -43,94 +43,110 @@
       padding:56px 24px 70px;
     }
 
-    /* === CANVAS WIDTH / POSITION LIKE SCREENSHOT === */
+    /* canvas width matches screenshot feel */
     .wrap{
       width:100%;
       max-width:1160px;
-      position:relative;
     }
 
-    /* === GRID MATCHING SCREENSHOT ===
-       Left column wide, right column narrow.
-       Big negative space on right under top row for the button.
-    */
+    /* two-column layout exactly like screenshot */
     .grid{
       display:grid;
       grid-template-columns: 1.55fr 0.75fr;
-      grid-template-rows: auto auto auto;
       gap:28px 34px;
-      align-items:stretch;
+      align-items:start;
     }
 
+    /* BASE CARD */
     .card{
       background:rgba(15,15,20,.92);
       border:1px solid var(--hair);
       border-radius:var(--radius);
       box-shadow:0 34px 160px rgba(0,0,0,.72);
-      padding:26px 28px;
+      padding:28px 30px;
     }
 
-    /* Titles: small, spaced, purple */
+    /* TITLES */
     .title{
-      margin:0 0 14px 0;
-      font-size:20px;
+      margin:0 0 18px 0;
+      font-size:22px;
       font-weight:700;
       letter-spacing:.08em;
       text-transform:uppercase;
       color:rgba(185,145,235,.82);
     }
 
-    /* Body text: controlled, not huge, not overly tall */
+    /* TEXT */
     .body{
       margin:0;
-      font-size:15px;
-      line-height:1.7;
+      font-size:16px;
+      line-height:1.75;
       color:rgba(255,255,255,.88);
       white-space:pre-wrap;
     }
 
-    /* Make left cards feel roomy but not tall */
-    .core .body,
-    .consequence .body,
-    .mechanism .body{
-      max-width:62ch;
+    /* === CARD TYPES (this is what your layout was missing) === */
+
+    /* BIG HERO (CORE) */
+    .card--hero{
+      padding:34px 34px 36px;
+      border-radius:40px; /* more “pillowy” like screenshot */
+      min-height:260px;
+    }
+    .card--hero .title{ font-size:28px; margin-bottom:22px; }
+    .card--hero .body{
+      font-size:18px;
+      line-height:1.8;
+      max-width:56ch;
     }
 
-    /* Right card: tighter text block + slightly smaller feel */
-    .closing{
-      padding:26px 24px;
+    /* WIDE STACKED (CONSEQUENCE + MECHANISM) */
+    .card--wide{
+      padding:30px 34px;
+      border-radius:34px;
+      min-height:160px;
     }
-    .closing .body{
-      font-size:13px;
+    .card--wide .title{ font-size:22px; margin-bottom:18px; }
+    .card--wide .body{
+      font-size:15px;
       line-height:1.8;
-      max-width:28ch;              /* forces the same wrapped look */
+      max-width:92ch;
       color:rgba(255,255,255,.82);
     }
 
-    /* Positioning like screenshot */
+    /* SMALL RIGHT CARD (CLOSING) */
+    .card--side{
+      padding:28px 26px 30px;
+      border-radius:34px;
+      min-height:260px;
+      max-width:340px; /* forces the narrow look */
+      justify-self:end; /* hug the right edge */
+    }
+    .card--side .title{
+      font-size:22px;
+      margin-bottom:18px;
+    }
+    .card--side .body{
+      font-size:13px;
+      line-height:1.9;
+      max-width:28ch; /* wrap exactly like screenshot */
+      color:rgba(255,255,255,.78);
+    }
+
+    /* POSITIONS */
     .core{ grid-column:1; grid-row:1; }
     .closing{ grid-column:2; grid-row:1; }
+    .consequence{ grid-column:1; grid-row:2; }
+    .mechanism{ grid-column:1; grid-row:3; }
 
-    .consequence{
-      grid-column:1;
-      grid-row:2;
-      padding-top:22px;
-      padding-bottom:24px;
-    }
-
-    .mechanism{
-      grid-column:1;
+    /* BUTTON LIVES IN THE EMPTY RIGHT COLUMN AREA */
+    .ctaSlot{
+      grid-column:2;
       grid-row:3;
-      padding-top:22px;
-      padding-bottom:24px;
-    }
-
-    /* === BUTTON: bottom-right in the empty space === */
-    .ctaRow{
       display:flex;
+      align-items:center;
       justify-content:flex-end;
-      margin-top:22px;
-      padding-right:18px; /* nudge like screenshot */
+      padding-right:6px;
     }
 
     .btn{
@@ -150,20 +166,36 @@
     .btn:hover{opacity:.92}
     .btn:active{transform:translateY(1px)}
 
-    /* Responsive: stack, but keep the “feel” */
+    /* MOBILE: stack clean */
     @media (max-width:980px){
       body{ padding:34px 16px 44px; }
+
       .grid{
         grid-template-columns:1fr;
         gap:18px;
       }
-      .closing .body{ max-width:none; }
-      .ctaRow{
+
+      .card--side{
+        max-width:none;
+        justify-self:stretch;
+        min-height:auto;
+      }
+      .card--side .body{ max-width:none; }
+
+      .ctaSlot{
+        grid-column:1;
+        grid-row:auto;
         justify-content:stretch;
         padding-right:0;
-        margin-top:16px;
       }
-      .btn{ width:100%; min-width:0; }
+      .btn{
+        width:100%;
+        min-width:0;
+      }
+
+      .card--hero{ min-height:auto; border-radius:34px; }
+      .card--hero .title{ font-size:24px; }
+      .card--hero .body{ font-size:16px; }
     }
   </style>
 </head>
@@ -172,47 +204,44 @@
   <main class="wrap">
     <section class="grid">
 
-      <div class="card core">
+      <!-- CORE (BIG) -->
+      <div class="card card--hero core">
         <h2 class="title">Core Diagnosis</h2>
-        <p class="body" id="coreText">
-Your responses point to a clear pattern.
+        <p class="body" id="coreText">Your responses point to a clear pattern.
 Progress didn’t fade gradually — it stopped after a break.
-Since then, starting has felt heavier than it used to.
-        </p>
+Since then, starting has felt heavier than it used to.</p>
       </div>
 
-      <div class="card closing">
+      <!-- CLOSING (SMALL RIGHT) -->
+      <div class="card card--side closing">
         <h2 class="title">Closing Insight</h2>
-        <p class="body" id="closingText">
-This didn’t fail because you lacked discipline.
+        <p class="body" id="closingText">This didn’t fail because you lacked discipline.
 It failed because nothing was holding execution in place.
-Until structure is installed, effort will always feel optional.
-        </p>
+Until structure is installed, effort will always feel optional.</p>
       </div>
 
-      <div class="card consequence">
+      <!-- CONSEQUENCE (WIDE) -->
+      <div class="card card--wide consequence">
         <h2 class="title">Consequence</h2>
-        <p class="body" id="consequenceText">
-Right now, execution depends on how you feel.
+        <p class="body" id="consequenceText">Right now, execution depends on how you feel.
 When energy drops or doubt appears, nothing holds the action in place.
-Each restart without structure makes the pause come sooner next time.
-        </p>
+Each restart without structure makes the pause come sooner next time.</p>
       </div>
 
-      <div class="card mechanism">
+      <!-- MECHANISM (WIDE) -->
+      <div class="card card--wide mechanism">
         <h2 class="title">Hidden Mechanism</h2>
-        <p class="body" id="mechanismText">
-When that break happened, your system adapted.
+        <p class="body" id="mechanismText">When that break happened, your system adapted.
 It learned to slow you down before commitment, not during effort.
-This isn’t hesitation. It’s protection against another restart that doesn’t last.
-        </p>
+This isn’t hesitation. It’s protection against another restart that doesn’t last.</p>
+      </div>
+
+      <!-- BUTTON IN EMPTY RIGHT SPACE -->
+      <div class="ctaSlot">
+        <button class="btn" id="continueBtn">Continue</button>
       </div>
 
     </section>
-
-    <div class="ctaRow">
-      <button class="btn" id="continueBtn">Continue</button>
-    </div>
   </main>
 
   <script>
