@@ -19,6 +19,7 @@
       --muted:rgba(255,255,255,.62);
       --accent:#632f96;
       --radius:34px;
+      --btn:#6a38a3;
     }
 
     *{box-sizing:border-box}
@@ -34,155 +35,118 @@
       background-attachment:fixed;
       color:var(--text);
       font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      display:grid;
-      place-items:center;
-      padding:28px 18px;
+      padding:40px 28px;
     }
 
-    /* ===== LAYOUT WRAP ===== */
+    /* --- PAGE FRAME (matches screenshot spacing) --- */
     .wrap{
-      width:100%;
-      max-width:1250px;
-      display:grid;
-      gap:22px;
+      max-width:1260px;
+      margin:0 auto;
     }
 
-    /*
-      Reference layout:
-      - Left column is wide (Core + the two wide cards)
-      - Right column is narrow (Closing + empty space + button)
-    */
     .grid{
       display:grid;
-      gap:22px;
-      grid-template-columns: 1.25fr 0.75fr;
-      align-items:start;
-    }
-
-    /* Left stack */
-    .left{
-      display:grid;
-      gap:22px;
-      grid-template-columns: 1fr;
-    }
-
-    /* Top row: core + closing */
-    .topRow{
-      display:grid;
-      gap:22px;
-      grid-template-columns: 1fr 0.62fr; /* closing smaller */
+      grid-template-columns: 1fr 420px; /* big left + small right */
+      grid-template-rows: 210px 170px 190px; /* tuned to screenshot proportions */
+      gap:28px;
       align-items:stretch;
     }
 
-    /* Card base */
     .card{
       background:rgba(15,15,20,.92);
       border:1px solid var(--hair);
-      border-radius:var(--radius);
+      border-radius:44px; /* more pill-rounded like screenshot */
       box-shadow:0 34px 160px rgba(0,0,0,.72);
-      padding:28px 30px;
+      padding:30px 34px;
+      position:relative;
       overflow:hidden;
     }
 
-    /* Titles */
-    .title{
-      font-size:20px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:rgba(185,145,235,.85);
-      font-weight:700;
-      margin:0 0 14px 0;
+    /* subtle inner glow */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-80px -120px auto -120px;
+      height:240px;
+      background:radial-gradient(closest-side, rgba(99,47,150,.16), rgba(99,47,150,0));
+      pointer-events:none;
+      filter:blur(2px);
     }
 
-    /* Body text */
+    .title{
+      position:relative;
+      margin:0 0 16px 0;
+      font-size:22px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(185,145,235,.80);
+      font-weight:800;
+    }
+
     .body{
+      position:relative;
       margin:0;
       color:var(--text);
       font-size:18px;
+      line-height:1.65;
+      white-space:pre-wrap; /* keep AI formatting clean */
+    }
+
+    /* screenshot has more “breathing room” on Core */
+    .core .body{
+      max-width:62ch;
+    }
+
+    /* Closing card uses smaller body text */
+    .closing .body{
+      font-size:13px;
       line-height:1.55;
-      white-space:pre-wrap;
-    }
-
-    /* === Specific sizing to match reference === */
-    .coreCard{ min-height:210px; }
-    .closingCard{ min-height:210px; }
-
-    .wideCard{ min-height:170px; }
-
-    /* Closing card has centered copy like reference */
-    .closingCard .body{
-      text-align:center;
-      max-width:36ch;
-      margin:0 auto;
-      font-size:14px;
-      line-height:1.7;
       color:rgba(255,255,255,.86);
+      max-width:34ch;
     }
 
-    .closingCard .title{
-      margin-bottom:18px;
-    }
+    /* Placement (exact layout) */
+    .core{ grid-column:1; grid-row:1; }
+    .closing{ grid-column:2; grid-row:1; padding:28px 30px; }
+    .consequence{ grid-column:1; grid-row:2; }
+    .mechanism{ grid-column:1; grid-row:3; }
 
-    /* The wide cards have slightly smaller body like reference */
-    .wideCard .body{
-      font-size:14px;
-      line-height:1.8;
-      max-width:88ch;
-    }
-
-    /* In reference, core text looks bigger + spaced */
-    .coreCard .body{
-      font-size:16px;
-      line-height:1.85;
-      max-width:72ch;
-    }
-
-    /* Right column: empty space + button anchored lower right */
-    .right{
-      display:grid;
-      grid-template-rows: 1fr auto;
-      gap:22px;
-      min-height:100%;
-    }
-
-    .btnWrap{
+    /* Button sits bottom-right like screenshot */
+    .footer{
       display:flex;
       justify-content:flex-end;
-      align-items:flex-end;
-      padding-bottom:4px;
+      margin-top:26px;
+      padding-right:6px;
     }
 
     .btn{
       appearance:none;
       border:0;
       cursor:pointer;
-      min-width:280px;
+      width:320px;
       height:56px;
       border-radius:22px;
-      background:rgba(106,56,163,1);
+      background:var(--btn);
       color:rgba(10,10,14,.92);
-      font-size:18px;
+      font-size:20px;
       font-weight:800;
       transition:opacity .12s ease, transform .08s ease;
     }
     .btn:hover{opacity:.92}
     .btn:active{transform:translateY(1px)}
 
-    /* Mobile: stack like a clean vertical flow */
+    /* Responsive: stack like a clean mobile layout */
     @media (max-width:980px){
-      .grid{ grid-template-columns:1fr; }
-      .topRow{ grid-template-columns:1fr; }
-      .right{ grid-template-rows:auto; }
-      .btnWrap{ justify-content:stretch; }
-      .btn{ width:100%; min-width:0; }
-      .closingCard .body{ max-width:100%; }
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:10px;
-      white-space:pre-wrap;
+      body{padding:28px 18px;}
+      .grid{
+        grid-template-columns:1fr;
+        grid-template-rows:auto;
+        gap:18px;
+      }
+      .core,.closing,.consequence,.mechanism{grid-column:auto; grid-row:auto;}
+      .footer{justify-content:stretch; padding-right:0;}
+      .btn{width:100%;}
+      .closing .body{max-width:none;}
     }
   </style>
 </head>
@@ -191,63 +155,54 @@
   <main class="wrap">
     <section class="grid">
 
-      <!-- LEFT COLUMN -->
-      <div class="left">
-
-        <!-- TOP ROW: CORE + CLOSING -->
-        <div class="topRow">
-
-          <div class="card coreCard">
-            <h2 class="title">Core Diagnosis</h2>
-            <p class="body" id="coreText">
-              Your responses point to a clear pattern. Progress didn’t fade gradually — it stopped after a break. Since then, starting has felt heavier than it used to.
-            </p>
-          </div>
-
-          <div class="card closingCard">
-            <h2 class="title">Closing Insight</h2>
-            <p class="body" id="closingText">
-              This didn’t fail because you lacked discipline. It failed because nothing was holding execution in place. Until structure is installed, effort will always feel optional.
-            </p>
-          </div>
-
-        </div>
-
-        <!-- WIDE STACK: CONSEQUENCE + MECHANISM -->
-        <div class="card wideCard">
-          <h2 class="title">Consequence</h2>
-          <p class="body" id="consequenceText">
-            Right now, execution depends on how you feel. When energy drops or doubt shows up, nothing locks the action in. Each restart without structure makes the next pause come sooner.
-          </p>
-        </div>
-
-        <div class="card wideCard">
-          <h2 class="title">Hidden Mechanism</h2>
-          <p class="body" id="mechanismText">
-            When that break happened, your system adapted. It learned to slow you down before commitment, not during effort. This isn’t hesitation — it’s protection against another restart that doesn’t last.
-          </p>
-        </div>
-
+      <div class="card core">
+        <h2 class="title">Core Diagnosis</h2>
+        <p class="body" id="coreText">
+Your responses point to a clear pattern.
+Progress didn’t fade gradually it stopped after a break.
+Since then, starting has felt heavier than it used to.
+        </p>
       </div>
 
-      <!-- RIGHT COLUMN (empty space + button bottom-right) -->
-      <div class="right">
-        <div></div>
-        <div class="btnWrap">
-          <button class="btn" id="continueBtn">Continue</button>
-        </div>
+      <div class="card closing">
+        <h2 class="title">Closing Insight</h2>
+        <p class="body" id="closingText">
+This didn’t fail because you lacked discipline.
+It failed because nothing was holding execution in place.
+Until structure is installed, effort will always feel optional.
+        </p>
+      </div>
+
+      <div class="card consequence">
+        <h2 class="title">Consequence</h2>
+        <p class="body" id="consequenceText">
+Right now, execution depends on how you feel.
+When energy drops or doubt appears, nothing holds the action in place.
+Each restart without structure makes the pause come sooner next time.
+        </p>
+      </div>
+
+      <div class="card mechanism">
+        <h2 class="title">Hidden Mechanism</h2>
+        <p class="body" id="mechanismText">
+When that break happened, your system adapted.
+It learned to slow you down before commitment not during effort.
+This isn’t hesitation. It’s protection against another restart that doesn’t last.
+        </p>
       </div>
 
     </section>
 
-    <div class="muted" id="debugLine" style="display:none;"></div>
+    <div class="footer">
+      <button class="btn" id="continueBtn">Continue</button>
+    </div>
   </main>
 
   <script>
-    const SUMMARY_KEY = "mn8_summary";
-    const NEXT_PAGE = "index.html";
+    const SUMMARY_KEY = "mn8_summary";     // reviewing.html saves this
+    const NEXT_PAGE = "index.html";        // change if needed
 
-    function safeParse(raw) {
+    function safeParse(raw){
       try { return JSON.parse(raw); } catch { return null; }
     }
 
@@ -274,4 +229,3 @@
   </script>
 </body>
 </html>
-
