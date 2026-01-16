@@ -40,7 +40,7 @@
       font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       display:flex;
       justify-content:center;
-      padding:56px 24px 76px; /* bottom padding so nothing feels stuck */
+      padding:56px 24px 70px;
     }
 
     .wrap{
@@ -48,16 +48,14 @@
       max-width:1200px;
     }
 
-    /* Desktop grid matches your screenshot */
+    /* Desktop layout (matches your screenshot) */
     .grid{
       display:grid;
-      grid-template-columns: 1.55fr 0.78fr;
-      grid-template-rows: auto auto auto;
+      grid-template-columns: 1.55fr 0.78fr; /* left wide, right narrow */
       gap:28px 34px;
       align-items:start;
     }
 
-    /* Base card */
     .card{
       background:rgba(15,15,20,.92);
       border:1px solid var(--hair);
@@ -66,7 +64,7 @@
       overflow:hidden;
     }
 
-    .cardInner{
+    .inner{
       padding:28px 30px;
     }
 
@@ -85,20 +83,19 @@
       color:rgba(255,255,255,.86);
     }
 
-    /* ---- Card types (fixes "everything same size") ---- */
+    /* ---- Card types (fixes “slim” look) ---- */
 
-    /* HERO (Core) */
+    /* HERO: Core */
     .hero{
-      border-radius:44px;
+      border-radius:42px;
     }
-    .hero .cardInner{
-      padding:42px 44px 44px;
-      min-height:300px; /* avoids slim look */
+    .hero .inner{
+      padding:38px 40px 42px;
+      min-height:300px;
     }
     .hero .title{
       font-size:30px;
       margin-bottom:22px;
-      letter-spacing:.09em;
     }
     .hero .body{
       font-size:18px;
@@ -106,10 +103,10 @@
       max-width:58ch;
     }
 
-    /* WIDE (Consequence + Hidden) */
-    .wide .cardInner{
+    /* WIDE: Consequence + Mechanism */
+    .wide .inner{
       padding:30px 36px 32px;
-      min-height:190px; /* avoids slim look */
+      min-height:185px;
     }
     .wide .title{
       font-size:22px;
@@ -122,13 +119,12 @@
       color:rgba(255,255,255,.78);
     }
 
-    /* SIDE (Closing) */
+    /* SIDE: Closing */
     .side{
       max-width:360px;
       justify-self:end;
-      border-radius:30px;
     }
-    .side .cardInner{
+    .side .inner{
       padding:28px 26px 30px;
       min-height:260px;
     }
@@ -149,15 +145,17 @@
     .consequence{ grid-column:1; grid-row:2; }
     .mechanism{ grid-column:1; grid-row:3; }
 
-    /* CTA in the empty right side, like your screenshot */
+    /* CTA: right column, under Mechanism, lowered + padded like your reference */
     .cta{
       grid-column:2;
       grid-row:3;
+      justify-self:end;
+      align-self:end;
       display:flex;
       justify-content:flex-end;
-      align-items:flex-start;
-      padding-top:40px;        /* pushes button LOWER */
-      padding-right:18px;      /* right breathing room */
+      padding-right:32px;   /* right padding */
+      padding-bottom:14px;  /* puts it LOWER */
+      margin-top:16px;      /* extra drop if row is tall */
     }
 
     .btn{
@@ -172,55 +170,75 @@
       font-size:18px;
       font-weight:800;
       letter-spacing:.02em;
-      box-shadow:0 18px 60px rgba(0,0,0,.55);
       transition:opacity .12s ease, transform .08s ease;
     }
     .btn:hover{opacity:.92}
     .btn:active{transform:translateY(1px)}
 
-    /* ---- Mobile: clean, premium stack ---- */
+    /* ----- Mobile: no skinny columns, clean stacking, button full-width ----- */
     @media (max-width:980px){
-      body{ padding:34px 16px 46px; }
+      body{ padding:28px 16px 36px; }
 
       .grid{
         grid-template-columns:1fr;
-        grid-template-rows:auto;
         gap:18px;
       }
 
       .side{
         max-width:none;
         justify-self:stretch;
+      }
+      .side .body{
+        max-width:none;
+      }
+
+      .hero{
         border-radius:34px;
       }
-      .side .body{ max-width:none; }
-
-      .hero{ border-radius:34px; }
-      .hero .cardInner{
+      .hero .inner{
         min-height:auto;
-        padding:32px 26px 34px;
+        padding:28px 22px 30px;
       }
-      .hero .title{ font-size:24px; }
-      .hero .body{ font-size:16px; line-height:1.75; }
+      .hero .title{
+        font-size:24px;
+        margin-bottom:16px;
+      }
+      .hero .body{
+        font-size:16px;
+        line-height:1.75;
+        max-width:none;
+      }
 
-      .wide .cardInner{
+      .wide .inner{
         min-height:auto;
-        padding:26px 26px 28px;
+        padding:24px 22px 26px;
+      }
+      .wide .title{
+        font-size:20px;
       }
 
+      /* Button becomes its own row after all cards */
       .cta{
         grid-column:1;
         grid-row:auto;
-        justify-content:stretch;
-        padding-top:10px;
-        padding-right:0;
+        justify-self:stretch;
+        align-self:stretch;
+        padding:0;
+        margin-top:8px;
       }
       .btn{
         width:100%;
         min-width:0;
-        height:58px;
-        border-radius:22px;
+        height:56px;
+        border-radius:20px;
       }
+    }
+
+    /* Optional: very small phones */
+    @media (max-width:360px){
+      .hero .title{ font-size:22px; }
+      .hero .body{ font-size:15px; }
+      .btn{ height:54px; }
     }
   </style>
 </head>
@@ -228,9 +246,10 @@
 <body>
   <main class="wrap">
     <section class="grid">
-      <!-- CORE -->
+
+      <!-- CORE (HERO) -->
       <div class="card hero core">
-        <div class="cardInner">
+        <div class="inner">
           <h2 class="title">Core Diagnosis</h2>
           <p class="body" id="coreText">Your responses point to a clear pattern.
 Progress didn’t fade gradually — it stopped after a break.
@@ -238,9 +257,9 @@ Since then, starting has felt heavier than it used to.</p>
         </div>
       </div>
 
-      <!-- CLOSING -->
+      <!-- CLOSING (SIDE) -->
       <div class="card side closing">
-        <div class="cardInner">
+        <div class="inner">
           <h2 class="title">Closing Insight</h2>
           <p class="body" id="closingText">This didn’t fail because you lacked discipline.
 It failed because nothing was holding execution in place.
@@ -248,9 +267,9 @@ Until structure is installed, effort will always feel optional.</p>
         </div>
       </div>
 
-      <!-- CONSEQUENCE -->
+      <!-- CONSEQUENCE (WIDE) -->
       <div class="card wide consequence">
-        <div class="cardInner">
+        <div class="inner">
           <h2 class="title">Consequence</h2>
           <p class="body" id="consequenceText">Right now, execution depends on how you feel.
 When energy drops or doubt appears, nothing holds the action in place.
@@ -258,9 +277,9 @@ Each restart without structure makes the pause come sooner next time.</p>
         </div>
       </div>
 
-      <!-- MECHANISM -->
+      <!-- MECHANISM (WIDE) -->
       <div class="card wide mechanism">
-        <div class="cardInner">
+        <div class="inner">
           <h2 class="title">Hidden Mechanism</h2>
           <p class="body" id="mechanismText">When that break happened, your system adapted.
 It learned to slow you down before commitment, not during effort.
@@ -268,10 +287,11 @@ This isn’t hesitation. It’s protection against another restart that doesn’
         </div>
       </div>
 
-      <!-- CTA (desktop: right side, lower) -->
+      <!-- CTA (Right column, lower) -->
       <div class="cta">
         <button class="btn" id="continueBtn">Continue</button>
       </div>
+
     </section>
   </main>
 
@@ -292,6 +312,7 @@ This isn’t hesitation. It’s protection against another restart that doesn’
       const raw = localStorage.getItem(SUMMARY_KEY);
       const summary = raw ? safeParse(raw) : null;
 
+      // If API failed, defaults stay (page still looks premium).
       if (summary && typeof summary === "object") {
         if (summary.core) coreEl.textContent = String(summary.core).trim();
         if (summary.mechanism) mechEl.textContent = String(summary.mechanism).trim();
