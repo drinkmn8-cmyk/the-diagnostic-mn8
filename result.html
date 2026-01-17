@@ -258,6 +258,8 @@
         right:14px;
         bottom: calc(14px + env(safe-area-inset-bottom));
         z-index:50;
+        width: auto;
+}
 
         padding:0;
         background:none;
@@ -270,16 +272,22 @@
         justify-content:stretch;
       }
 
-      .btn{
-        width:100%;
-        min-width:0;
-        height:56px;
-        border-radius:16px;
-        font-size:17px;
+.btn{
+  width: 100%;
+  min-width: 100%;
+  height: 56px;
 
-        background: var(--btn); /* one purple */
-        box-shadow:none;        /* kill double layer */
-      }
+  border-radius: 18px;
+  background: var(--btn);   /* solid purple */
+  color: rgba(10,10,14,.92);
+
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .02em;
+
+  box-shadow: none;         /* keep it clean, Apple-style */
+}
+
 
       /* THIS is the real fix: guaranteed space under the last card */
       .mobileSpacer{
