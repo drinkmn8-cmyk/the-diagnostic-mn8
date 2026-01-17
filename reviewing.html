@@ -59,7 +59,6 @@
       padding:56px 56px 46px;
     }
 
-    /* soft internal glow */
     .card::before{
       content:"";
       position:absolute;
@@ -93,7 +92,6 @@
       letter-spacing:-0.02em;
     }
 
-    /* Apple-style pill instead of subtext */
     .pill{
       position:relative;
       display:inline-flex;
@@ -115,7 +113,6 @@
       box-shadow:0 0 0 6px rgba(99,47,150,.18);
     }
 
-    /* Integrated panel (NOT a second card) */
     .panel{
       position:relative;
       margin-top:34px;
@@ -123,7 +120,7 @@
       border-radius:28px;
       background:rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.10);
-      box-shadow:none; /* key: no “card-in-card” look */
+      box-shadow:none;
     }
 
     .panelTitle{
@@ -153,7 +150,7 @@
       width:0%;
       background:rgba(185,145,235,.90);
       border-radius:999px;
-      transition:width .35s ease;
+      transition:width .18s linear;
     }
 
     .row{
@@ -167,6 +164,11 @@
 
     .statusRight{
       color:rgba(255,255,255,.58);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:48%;
+      text-align:right;
     }
 
     .error{
@@ -178,7 +180,6 @@
       display:none;
     }
 
-    /* Mobile: expensive, tight, readable */
     @media (max-width: 640px){
       body{ padding:22px 14px; place-items:start center; }
       .card{
@@ -239,69 +240,157 @@
   </main>
 
   <script>
-    // ===== CONFIG =====
-    const RESULTS_PAGE = "result.html";
+    // ===== CONFIG (KEEP THESE SAME AS YOUR WORKING VERSION) =====
+    const STORAGE_KEY   = "mn8_answers";
+    const SUMMARY_KEY   = "mn8_summary";
+    const RESULTS_PAGE  = "result.html";
+    const FALLBACK_BACK = "q5.html";
+    const REQUIRED      = ["q1","q2","q3","q4","q5"];
 
-    // ===== UI HELPERS =====
+    // Progress UI runtime (visual only)
+    const TOTAL_TIME_MS = 45000;
+
+    // Guard: prevent double-run / bfcache weirdness
     let redirected = false;
+    let uiDone = false;
+    let apiDone = false;
 
-    function goToResults(){
-      if (redirected) return;
-      redirected = true;
-      window.location.href = RESULTS_PAGE;
-    }
+    const barFill = document.getElementById("barFill");
+    const pctEl = document.getElementById("pct");
+    const stageTitleEl = document.getElementById("stageTitle");
+    const stageSubEl = document.getElementById("stageSub");
+    const statusRightEl = document.getElementById("statusRight");
+    const errorBox = document.getElementById("errorBox");
 
     function setProgress(pct){
       const p = Math.max(0, Math.min(100, Number(pct) || 0));
-      document.getElementById("pct").textContent = p + "%";
-      document.getElementById("barFill").style.width = p + "%";
-
-      if (p >= 100) {
-        // tiny delay so the UI visibly reaches 100%
-        setTimeout(goToResults, 250);
-      }
+      pctEl.textContent = p + "%";
+      barFill.style.width = p + "%";
+      if (p >= 100) uiDone = true;
+      tryRedirect();
     }
 
-    function setStage(title, sub){
-      if (title) document.getElementById("stageTitle").textContent = title;
-      if (sub) document.getElementById("stageSub").textContent = sub;
+    function setStage(t, s){
+      if (t) stageTitleEl.textContent = t;
+      if (s) stageSubEl.textContent = s;
     }
 
-    function setStatusRight(txt){
-      document.getElementById("statusRight").textContent = txt || "";
+    function setStatusRight(t){
+      statusRightEl.textContent = t || "";
     }
 
     function showError(msg){
-      const box = document.getElementById("errorBox");
-      box.style.display = "block";
-      box.textContent = msg || "Unknown error";
+      errorBox.style.display = "block";
+      errorBox.textContent = msg || "Unknown error";
       setStatusRight("error");
     }
 
-    // ===== DEMO PROGRESSION =====
-    // Keep this ONLY if you need a visual while API runs.
-    (function demo(){
-      const steps = [
-        {p: 5,  t:"Analyzing patterns", s:"Reading your answers and mapping behavioral signals."},
-        {p: 22, t:"Identifying resistance points", s:"Locating where momentum breaks and why it repeats."},
-        {p: 51, t:"Building your clarity summary", s:"Turning signals into a clean diagnosis."},
-        {p: 78, t:"Finalizing diagnostic", s:"Preparing your result page."},
-        {p: 100,t:"Finalizing diagnostic", s:"Preparing your result page."}
-      ];
+    function tryRedirect(){
+      if (redirected) return;
 
-      let i = 0;
-      const tick = setInterval(() => {
-        if (i >= steps.length) { clearInterval(tick); return; }
-        setStage(steps[i].t, steps[i].s);
-        setProgress(steps[i].p);
-        setStatusRight("processing...");
-        i++;
-      }, 900);
+      // If summary is already saved (refresh / back), allow redirect once UI completes
+      const already = !!localStorage.getItem(SUMMARY_KEY);
+      if ((apiDone || already) && uiDone) {
+        redirected = true;
+        setTimeout(() => {
+          window.location.href = RESULTS_PAGE;
+        }, 450);
+      }
+    }
+
+    function safeParse(raw){
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function getAnswers(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      return safeParse(raw);
+    }
+
+    function missingKeys(answers){
+      return REQUIRED.filter(k => !answers || !answers[k] || String(answers[k]).trim().length === 0);
+    }
+
+    // ===== VISUAL PROGRESSION (ALWAYS FINISHES) =====
+    const steps = [
+      { t: 0,     title: "Analyzing patterns",            line: "Reading your answers and mapping behavioral signals." },
+      { t: 12000, title: "Identifying resistance points", line: "Locating where momentum breaks and why it repeats." },
+      { t: 26000, title: "Checking consistency signals",  line: "Comparing intent vs execution tendencies." },
+      { t: 38000, title: "Finalizing diagnostic",         line: "Preparing your result page." }
+    ];
+
+    const start = performance.now();
+    const uiTimer = setInterval(() => {
+      const elapsed = performance.now() - start;
+      const p = Math.min(1, elapsed / TOTAL_TIME_MS);
+      const percent = Math.round(p * 100);
+
+      setProgress(percent);
+
+      for (let i = steps.length - 1; i >= 0; i--) {
+        if (elapsed >= steps[i].t) {
+          setStage(steps[i].title, steps[i].line);
+          break;
+        }
+      }
+
+      if (percent >= 100) {
+        clearInterval(uiTimer);
+        uiDone = true;
+        tryRedirect();
+      }
+    }, 80);
+
+    // ===== API FLOW (THIS IS THE PART THAT ACTUALLY MATTERS) =====
+    (async function run(){
+      setStatusRight("processing...");
+
+      const answers = getAnswers();
+      const missing = missingKeys(answers);
+
+      if (missing.length) {
+        setStatusRight("missing answers");
+        showError(
+          "Missing answers:\n- " + missing.join("\n- ") +
+          "\n\nGo back to: " + FALLBACK_BACK +
+          "\nFix your localStorage save logic for the missing questions."
+        );
+        return;
+      }
+
+      try {
+        const r = await fetch("/api/diagnostic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answers }),
+          cache: "no-store"
+        });
+
+        const data = await r.json().catch(() => ({}));
+
+        if (!r.ok) {
+          setStatusRight("error");
+
+          const pretty =
+            (data && data.details && data.details.error && data.details.error.message)
+              ? data.details.error.message
+              : (data && data.error ? data.error : "Server error.");
+
+          showError(pretty);
+          return;
+        }
+
+        localStorage.setItem(SUMMARY_KEY, JSON.stringify(data));
+        apiDone = true;
+        setStatusRight("ready");
+        tryRedirect();
+
+      } catch (e) {
+        setStatusRight("offline");
+        showError("Network error. Refresh. If it keeps failing, your deployment/env vars are wrong.");
+      }
     })();
-
-    // If your API fails, call: showError("your message")
-    // Example:
-    // showError("Model did not return valid JSON");
   </script>
 </body>
 </html>
