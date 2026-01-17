@@ -216,13 +216,11 @@
 
     <h1 class="title" id="headline">Reviewing your responses...</h1>
 
-    <!-- replaces the old subtext line -->
     <div class="pill" id="pill">
       <span class="dot" aria-hidden="true"></span>
       <span>TAKES UP TO 60 SECONDS</span>
     </div>
 
-    <!-- integrated panel (not a nested “card”) -->
     <section class="panel" aria-label="Progress">
       <h2 class="panelTitle" id="stageTitle">Analyzing patterns</h2>
       <p class="panelSub" id="stageSub">Reading your answers and mapping behavioral signals.</p>
@@ -241,13 +239,27 @@
   </main>
 
   <script>
-    // Hook these into your existing flow if you already have it.
-    // This file only changes layout + UI behavior.
+    // ===== CONFIG =====
+    const RESULTS_PAGE = "result.html";
+
+    // ===== UI HELPERS =====
+    let redirected = false;
+
+    function goToResults(){
+      if (redirected) return;
+      redirected = true;
+      window.location.href = RESULTS_PAGE;
+    }
 
     function setProgress(pct){
       const p = Math.max(0, Math.min(100, Number(pct) || 0));
       document.getElementById("pct").textContent = p + "%";
       document.getElementById("barFill").style.width = p + "%";
+
+      if (p >= 100) {
+        // tiny delay so the UI visibly reaches 100%
+        setTimeout(goToResults, 250);
+      }
     }
 
     function setStage(title, sub){
@@ -266,10 +278,9 @@
       setStatusRight("error");
     }
 
-    // Demo progression (REMOVE if you already have live progress updates)
-    // Keep this only if you need a visual while API runs.
+    // ===== DEMO PROGRESSION =====
+    // Keep this ONLY if you need a visual while API runs.
     (function demo(){
-      let p = 0;
       const steps = [
         {p: 5,  t:"Analyzing patterns", s:"Reading your answers and mapping behavioral signals."},
         {p: 22, t:"Identifying resistance points", s:"Locating where momentum breaks and why it repeats."},
