@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-step="q1">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -129,7 +129,6 @@
       font-weight:600;
       font-size:16px;
       letter-spacing:.02em;
-      box-shadow:inset 0 0 0 0px rgba(255,255,255,.06);
       transition:opacity .12s ease, transform .08s ease;
     }
     .btnBack:hover{opacity:.92}
@@ -163,6 +162,47 @@
       .btnBack,.btnGo{min-width:0; flex:1}
     }
   </style>
+
+  <!-- GATE FIRST (no flash, no wrong step access) -->
+  <script>
+    const SESSION_KEY = "mn8_session_token";
+    const START_PAGE = "index.html";
+    const LOCKED_PAGE = "locked.html";
+    const THIS_STEP = document.documentElement.getAttribute("data-step") || "";
+
+    async function mn8Gate(){
+      const token = localStorage.getItem(SESSION_KEY);
+      if (!token) return window.location.replace(START_PAGE);
+
+      try {
+        const r = await fetch("/api/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+          cache: "no-store",
+        });
+
+        const data = await r.json().catch(() => ({}));
+
+        if (!r.ok || !data || data.valid !== true) {
+          localStorage.removeItem(SESSION_KEY);
+          return window.location.replace(START_PAGE);
+        }
+
+        if (data.status === "completed") {
+          return window.location.replace(LOCKED_PAGE);
+        }
+
+        if (data.step && THIS_STEP && data.step !== THIS_STEP) {
+          return window.location.replace(data.step + ".html");
+        }
+      } catch {
+        return window.location.replace(START_PAGE);
+      }
+    }
+
+    mn8Gate();
+  </script>
 </head>
 
 <body>
@@ -181,46 +221,49 @@
     </div>
   </main>
 
-<script>
-  const STORAGE_KEY = "mn8_answers";
-  const KEY = "q1";
-  const NEXT = "q2.html";
+  <script>
+    const STORAGE_KEY = "mn8_answers";
+    const KEY = "q1";
+    const NEXT = "q2.html";
 
-const input = document.getElementById(KEY);
-  const continueBtn = document.getElementById("continueBtn");
-  const backBtn = document.getElementById("backBtn");
+    const input = document.getElementById(KEY);
+    const continueBtn = document.getElementById("continueBtn");
+    const backBtn = document.getElementById("backBtn");
 
-  function getAnswers() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-    catch { return {}; }
-  }
-  function setAnswers(obj) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-  }
+    function getAnswers() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+      catch { return {}; }
+    }
+    function setAnswers(obj) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+    }
 
-  const existing = getAnswers();
-  if (existing[KEY]) input.value = existing[KEY];
+    const existing = getAnswers();
+    if (existing[KEY]) input.value = existing[KEY];
 
-  function updateUI() {
-    continueBtn.disabled = input.value.trim().length === 0;
-  }
+    function updateUI() {
+      continueBtn.disabled = input.value.trim().length === 0;
+    }
 
-  input.addEventListener("input", updateUI);
+    input.addEventListener("input", updateUI);
 
-  backBtn.addEventListener("click", () => history.back());
+    // Premium control: don't use history.back()
+    backBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
 
-  continueBtn.addEventListener("click", () => {
-    const val = input.value.trim();
-    if (!val) return;
+    continueBtn.addEventListener("click", () => {
+      const val = input.value.trim();
+      if (!val) return;
 
-    const answers = getAnswers();
-    answers[KEY] = val;
-    setAnswers(answers);
+      const answers = getAnswers();
+      answers[KEY] = val;
+      setAnswers(answers);
 
-    window.location.href = NEXT;
-  });
+      window.location.href = NEXT;
+    });
 
-  updateUI();
-</script>
+    updateUI();
+  </script>
 </body>
 </html>
