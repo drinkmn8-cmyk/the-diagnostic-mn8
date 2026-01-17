@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>The Diagnostic</title>
+  <title>MN8 Diagnostic — Reviewing</title>
 
   <!-- LATO -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,12 +14,21 @@
     :root{
       --bg:#000;
       --card:#0f0f14;
-      --hair:rgba(255,255,255,.08);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.55);
+      --hair:rgba(255,255,255,.10);
+
+      --white:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+
       --accent:#632f96;
+      --btn:#6a38a3;
+
       --radius:34px;
+      --radiusBig:42px;
+
+      --shadow:0 34px 160px rgba(0,0,0,.72);
+      --shadowSoft:0 18px 90px rgba(0,0,0,.60);
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
 
@@ -31,7 +40,7 @@
         radial-gradient(760px 420px at 50% 18%, rgba(99,47,150,.18), rgba(99,47,150,0) 70%),
         var(--bg);
       background-attachment:fixed;
-      color:var(--text);
+      color:var(--white);
       font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       display:grid;
       place-items:center;
@@ -41,280 +50,247 @@
     .card{
       width:100%;
       max-width:980px;
-      background:var(--card);
+      background:rgba(15,15,20,.92);
       border:1px solid var(--hair);
-      border-radius:var(--radius);
-      padding:52px 56px 48px;
-      box-shadow:0 34px 160px rgba(0,0,0,.72);
+      border-radius:var(--radiusBig);
+      box-shadow:var(--shadow);
       position:relative;
       overflow:hidden;
+      padding:56px 56px 46px;
+    }
+
+    /* soft internal glow */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-60px -80px auto -80px;
+      height:280px;
+      background:radial-gradient(closest-side, rgba(99,47,150,.18), rgba(99,47,150,0));
+      pointer-events:none;
+      filter:blur(2px);
+      opacity:.95;
     }
 
     .powered{
+      position:relative;
       font-size:12px;
       letter-spacing:.16em;
       text-transform:uppercase;
       color:rgba(185,145,235,.72);
       font-weight:500;
-      margin-bottom:18px;
       user-select:none;
+      margin-bottom:18px;
     }
     .powered sup{font-size:10px; opacity:.7}
 
-    h1{
-      margin:0 0 10px 0;
-      font-size:32px;
-      font-weight:700;
+    .title{
+      position:relative;
+      margin:0;
+      font-size:52px;
+      line-height:1.06;
+      font-weight:800;
       color:rgba(185,145,235,.92);
+      letter-spacing:-0.02em;
     }
 
-    .sub{
-      margin:0 0 22px 0;
-      color:var(--muted);
-      font-size:13px;
-      letter-spacing:.10em;
-      text-transform:uppercase;
-      line-height:1.6;
-    }
-
-    .panel{
-      margin-top:22px;
-      padding:22px 24px 18px;
-      border-radius:22px;
-      background:rgba(255,255,255,.02);
-      border:1px solid rgba(255,255,255,.06);
-    }
-
-    .lineTitle{
-      font-size:14px;
-      font-weight:700;
-      margin-bottom:6px;
-      color:rgba(255,255,255,.92);
-    }
-
-    .line{
-      font-size:13px;
-      color:rgba(255,255,255,.62);
-      min-height:18px;
-    }
-
-    .progressWrap{
+    /* Apple-style pill instead of subtext */
+    .pill{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
       margin-top:14px;
-      height:10px;
-      background:rgba(255,255,255,.06);
+      padding:10px 14px;
       border-radius:999px;
-      overflow:hidden;
+      background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.10);
+      color:rgba(255,255,255,.70);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .dot{
+      width:7px;height:7px;border-radius:999px;
+      background:rgba(185,145,235,.92);
+      box-shadow:0 0 0 6px rgba(99,47,150,.18);
+    }
+
+    /* Integrated panel (NOT a second card) */
+    .panel{
+      position:relative;
+      margin-top:34px;
+      padding:22px 22px 18px;
+      border-radius:28px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:none; /* key: no “card-in-card” look */
+    }
+
+    .panelTitle{
+      margin:0;
+      font-size:16px;
+      font-weight:800;
+      color:rgba(255,255,255,.90);
+      letter-spacing:-0.01em;
+    }
+
+    .panelSub{
+      margin:6px 0 14px 0;
+      color:rgba(255,255,255,.62);
+      font-size:13px;
+      line-height:1.55;
     }
 
     .bar{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .barFill{
       height:100%;
       width:0%;
-      background:linear-gradient(135deg,var(--accent),rgba(99,47,150,.55));
-      transition:width .18s linear;
+      background:rgba(185,145,235,.90);
+      border-radius:999px;
+      transition:width .35s ease;
     }
 
-    .eta{
-      margin-top:12px;
-      font-size:12px;
-      color:rgba(255,255,255,.45);
+    .row{
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:12px;
+      align-items:center;
+      margin-top:14px;
+      color:rgba(255,255,255,.62);
+      font-size:13px;
     }
 
-    .err{
-      margin-top:10px;
-      color:#ff5a5a;
-      font-size:12px;
-      display:none;
-      line-height:1.4;
-      white-space:pre-line;
+    .statusRight{
+      color:rgba(255,255,255,.58);
     }
 
-    .hint{
+    .error{
       margin-top:10px;
-      color:rgba(255,255,255,.45);
-      font-size:12px;
+      color:#ff4d4d;
+      font-size:13px;
+      line-height:1.5;
+      white-space:pre-wrap;
       display:none;
-      line-height:1.4;
-      white-space:pre-line;
+    }
+
+    /* Mobile: expensive, tight, readable */
+    @media (max-width: 640px){
+      body{ padding:22px 14px; place-items:start center; }
+      .card{
+        border-radius:34px;
+        padding:40px 20px 28px;
+        box-shadow:var(--shadowSoft);
+        margin-top:22px;
+      }
+      .title{
+        font-size:38px;
+        line-height:1.10;
+        letter-spacing:-0.02em;
+      }
+      .pill{
+        margin-top:12px;
+        padding:9px 12px;
+        font-size:11px;
+        letter-spacing:.12em;
+      }
+      .panel{
+        margin-top:22px;
+        padding:18px 16px 14px;
+        border-radius:26px;
+      }
+      .panelTitle{ font-size:15px; }
+      .panelSub{ font-size:13px; margin-bottom:12px; }
+      .row{ font-size:12px; }
     }
   </style>
 </head>
 
 <body>
-  <main class="card">
+  <main class="card" role="main" aria-live="polite">
     <div class="powered">POWERED BY MN8<sup>®</sup></div>
 
-    <h1>Reviewing your responses…</h1>
-    <div class="sub">This may take up to 60 seconds.</div>
+    <h1 class="title" id="headline">Reviewing your responses...</h1>
 
-    <div class="panel">
-      <div class="lineTitle" id="title">Analyzing patterns</div>
-      <div class="line" id="line">Reading your answers and mapping behavioral signals.</div>
-
-      <div class="progressWrap">
-        <div class="bar" id="bar"></div>
-      </div>
-
-      <div class="eta">
-        <span id="etaText">0% — reviewing data</span>
-        <span id="statusText" style="color:rgba(255,255,255,.38)">syncing…</span>
-      </div>
-
-      <div class="err" id="err"></div>
-      <div class="hint" id="hint"></div>
+    <!-- replaces the old subtext line -->
+    <div class="pill" id="pill">
+      <span class="dot" aria-hidden="true"></span>
+      <span>TAKES UP TO 60 SECONDS</span>
     </div>
+
+    <!-- integrated panel (not a nested “card”) -->
+    <section class="panel" aria-label="Progress">
+      <h2 class="panelTitle" id="stageTitle">Analyzing patterns</h2>
+      <p class="panelSub" id="stageSub">Reading your answers and mapping behavioral signals.</p>
+
+      <div class="bar" aria-hidden="true">
+        <div class="barFill" id="barFill"></div>
+      </div>
+
+      <div class="row">
+        <div><span id="pct">0%</span> — reviewing data</div>
+        <div class="statusRight" id="statusRight">processing...</div>
+      </div>
+
+      <div class="error" id="errorBox"></div>
+    </section>
   </main>
 
   <script>
-    // ===== CONFIG =====
-    const STORAGE_KEY = "mn8_answers";
-    const SUMMARY_KEY = "mn8_summary";
-    const TOTAL_TIME_MS = 45000;
-    const RESULTS_PAGE = "result.html";
-    const FALLBACK_BACK = "q5.html";
-    const REQUIRED = ["q1","q2","q3","q4","q5"];
+    // Hook these into your existing flow if you already have it.
+    // This file only changes layout + UI behavior.
 
-    // Prevent double-run on bfcache/back/refresh quirks
-    if (sessionStorage.getItem("mn8_reviewing_ran") === "1") {
-      // If already have summary, go straight through
-      const s = localStorage.getItem(SUMMARY_KEY);
-      if (s) window.location.href = RESULTS_PAGE;
-    }
-    sessionStorage.setItem("mn8_reviewing_ran", "1");
-
-    const steps = [
-      { t: 0,     title: "Analyzing patterns",            line: "Reading your answers and mapping behavioral signals." },
-      { t: 12000, title: "Identifying resistance points", line: "Locating where momentum breaks and why it repeats." },
-      { t: 26000, title: "Checking consistency signals",  line: "Comparing intent vs execution tendencies." },
-      { t: 38000, title: "Finalizing diagnostic",         line: "Preparing your clarity summary." }
-    ];
-
-    const bar = document.getElementById("bar");
-    const etaText = document.getElementById("etaText");
-    const statusText = document.getElementById("statusText");
-    const title = document.getElementById("title");
-    const line = document.getElementById("line");
-    const err = document.getElementById("err");
-    const hint = document.getElementById("hint");
-
-    function setError(message) {
-      err.style.display = "block";
-      err.textContent = message;
-    }
-    function setHint(message) {
-      hint.style.display = "block";
-      hint.textContent = message;
+    function setProgress(pct){
+      const p = Math.max(0, Math.min(100, Number(pct) || 0));
+      document.getElementById("pct").textContent = p + "%";
+      document.getElementById("barFill").style.width = p + "%";
     }
 
-    function getAnswers() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      try { return JSON.parse(raw); } catch { return null; }
+    function setStage(title, sub){
+      if (title) document.getElementById("stageTitle").textContent = title;
+      if (sub) document.getElementById("stageSub").textContent = sub;
     }
 
-    function missingKeys(answers) {
-      return REQUIRED.filter(k => !answers || !answers[k] || String(answers[k]).trim().length === 0);
+    function setStatusRight(txt){
+      document.getElementById("statusRight").textContent = txt || "";
     }
 
-    // ===== PROGRESS (always completes) =====
-    const start = performance.now();
-    let uiDone = false;
+    function showError(msg){
+      const box = document.getElementById("errorBox");
+      box.style.display = "block";
+      box.textContent = msg || "Unknown error";
+      setStatusRight("error");
+    }
 
-    const uiTimer = setInterval(() => {
-      const elapsed = performance.now() - start;
-      const p = Math.min(1, elapsed / TOTAL_TIME_MS);
-      const percent = Math.round(p * 100);
+    // Demo progression (REMOVE if you already have live progress updates)
+    // Keep this only if you need a visual while API runs.
+    (function demo(){
+      let p = 0;
+      const steps = [
+        {p: 5,  t:"Analyzing patterns", s:"Reading your answers and mapping behavioral signals."},
+        {p: 22, t:"Identifying resistance points", s:"Locating where momentum breaks and why it repeats."},
+        {p: 51, t:"Building your clarity summary", s:"Turning signals into a clean diagnosis."},
+        {p: 78, t:"Finalizing diagnostic", s:"Preparing your result page."},
+        {p: 100,t:"Finalizing diagnostic", s:"Preparing your result page."}
+      ];
 
-      bar.style.width = percent + "%";
-      etaText.textContent = `${percent}% — reviewing data`;
-
-      for (let i = steps.length - 1; i >= 0; i--) {
-        if (elapsed >= steps[i].t) {
-          title.textContent = steps[i].title;
-          line.textContent = steps[i].line;
-          break;
-        }
-      }
-
-      if (percent >= 100) {
-        uiDone = true;
-        clearInterval(uiTimer);
-      }
-    }, 80);
-
-    // ===== RUN ONCE =====
-    (async function run() {
-      statusText.textContent = "processing…";
-
-      const answers = getAnswers();
-      const missing = missingKeys(answers);
-
-      if (missing.length) {
-        statusText.textContent = "missing answers";
-        setError("Missing answers:\n- " + missing.join("\n- "));
-        setHint(
-          "Fix this first.\n" +
-          `1) Go back: ${FALLBACK_BACK}\n` +
-          `2) In console check: localStorage.getItem("${STORAGE_KEY}")\n` +
-          "If q1/q4 are missing, your Q pages aren’t saving correctly."
-        );
-        // NO AUTO REDIRECT. Let them read the error.
-        return;
-      }
-
-      try {
-        const r = await fetch("/api/diagnostic", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers }),
-          cache: "no-store"
-        });
-
-        const data = await r.json().catch(() => ({}));
-
-        if (!r.ok) {
-          statusText.textContent = "error";
-
-          // Show the most useful message possible:
-          const pretty =
-            (data && data.details && data.details.error && data.details.error.message)
-              ? data.details.error.message
-              : (data && data.error ? data.error : "Server error.");
-
-          setError(pretty);
-
-          // Add debug hint so you can see the real issue immediately
-          setHint(
-            "Debug:\n" +
-            `status: ${r.status}\n` +
-            "Open DevTools → Network → /api/diagnostic → Response\n" +
-            "If it says invalid_api_key / insufficient_quota / model_not_found — that’s the real problem."
-          );
-          return;
-        }
-
-        localStorage.setItem(SUMMARY_KEY, JSON.stringify(data));
-        statusText.textContent = "ready";
-
-        const wait = () => {
-          if (uiDone) {
-            window.location.href = RESULTS_PAGE;
-            return;
-          }
-          requestAnimationFrame(wait);
-        };
-        wait();
-
-      } catch (e) {
-        statusText.textContent = "offline";
-        setError("Network error.");
-        setHint("Refresh. If it keeps failing, your deployment or environment variables are wrong.");
-      }
+      let i = 0;
+      const tick = setInterval(() => {
+        if (i >= steps.length) { clearInterval(tick); return; }
+        setStage(steps[i].t, steps[i].s);
+        setProgress(steps[i].p);
+        setStatusRight("processing...");
+        i++;
+      }, 900);
     })();
+
+    // If your API fails, call: showError("your message")
+    // Example:
+    // showError("Model did not return valid JSON");
   </script>
 </body>
 </html>
