@@ -84,14 +84,14 @@
       color:var(--white);
       line-height:1.02;
     }
-    @media (max-width: 640px) {
+@media (max-width: 640px) {
   .title {
-    max-width: 10ch;          /* controls wrap width */
-    line-height: 1.05;
-    text-align: center;
-    letter-spacing: .10em;    /* slightly tighter on mobile */
+    white-space: nowrap;     /* FORCE one line */
+    font-size: 36px;         /* controlled size for mobile */
+    letter-spacing: .08em;   /* slightly tighter */
   }
 }
+
 
 
     .sub{
