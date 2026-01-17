@@ -158,7 +158,7 @@
       justify-self:end;
       align-self:end;
       padding-right:10px;
-      padding-bottom:36px;
+      padding-bottom:36px; /* lower like you wanted */
       display:flex;
     }
 
@@ -169,19 +169,28 @@
       min-width:340px;
       height:60px;
       border-radius:24px;
+
+      /* ONE solid purple (no 2 shades) */
       background: var(--btn);
       color: rgba(10,10,14,.92);
+
       font-size:18px;
       font-weight:800;
       letter-spacing:.02em;
+
       transition:opacity .12s ease, transform .08s ease;
+
+      /* remove “double layer” feel */
       box-shadow:none;
     }
     .btn:hover{opacity:.92}
     .btn:active{transform:translateY(1px)}
 
+    /* spacer only exists to create scroll room (mobile only) */
+    .mobileSpacer{ display:none; }
+
     /* =========================================================
-       MOBILE: expensive Apple-minimal + NO overlap
+       MOBILE: expensive Apple-minimal + FIX overlap
        ========================================================= */
     @media (max-width: 900px){
       body{
@@ -242,7 +251,7 @@
       .wide .inner{ padding:18px 16px 18px; min-height:auto; }
       .wide .title{ font-size:13px; margin-bottom:12px; }
 
-      /* Sticky CTA: ONLY the button (no background container) */
+      /* Sticky CTA: NO container card, just the button */
       .cta{
         position:fixed;
         left:14px;
@@ -254,22 +263,28 @@
         background:none;
         border:none;
         box-shadow:none;
+        backdrop-filter:none;
+        -webkit-backdrop-filter:none;
 
         display:flex;
+        justify-content:stretch;
       }
 
-      /* Full-width mobile button */
       .btn{
         width:100%;
         min-width:0;
         height:56px;
-        border-radius:18px;
+        border-radius:16px;
         font-size:17px;
+
+        background: var(--btn); /* one purple */
+        box-shadow:none;        /* kill double layer */
       }
 
-      /* Real “space under content” so last card is never hidden */
-      .wrap{
-        padding-bottom: 190px;
+      /* THIS is the real fix: guaranteed space under the last card */
+      .mobileSpacer{
+        display:block;
+        height: 190px; /* CTA height + breathing room */
       }
     }
   </style>
@@ -325,6 +340,9 @@ This isn’t hesitation. It’s protection against another restart that doesn’
       </div>
 
     </section>
+
+    <!-- MOBILE ONLY: creates space so last card is visible above sticky CTA -->
+    <div class="mobileSpacer" aria-hidden="true"></div>
   </main>
 
   <script>
