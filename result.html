@@ -27,8 +27,6 @@
 
       --shadow: 0 34px 160px rgba(0,0,0,.72);
       --shadowSoft: 0 18px 80px rgba(0,0,0,.55);
-
-      --glass: rgba(255,255,255,.035);
     }
 
     *{box-sizing:border-box}
@@ -107,20 +105,12 @@
       color:var(--text2);
     }
 
-    /* ===== Card Types (stop “all same size” issue) ===== */
+    /* ===== Card Types ===== */
 
     /* HERO (Core) */
-    .hero{
-      border-radius:var(--radiusBig);
-    }
-    .hero .inner{
-      padding:38px 40px 42px;
-      min-height:300px;
-    }
-    .hero .title{
-      font-size:30px;
-      margin-bottom:22px;
-    }
+    .hero{ border-radius:var(--radiusBig); }
+    .hero .inner{ padding:38px 40px 42px; min-height:300px; }
+    .hero .title{ font-size:30px; margin-bottom:22px; }
     .hero .body{
       font-size:18px;
       line-height:1.85;
@@ -129,17 +119,9 @@
     }
 
     /* WIDE (Consequence + Mechanism) */
-    .wide .inner{
-      padding:30px 36px 32px;
-      min-height:185px;
-    }
-    .wide .title{
-      font-size:22px;
-      margin-bottom:18px;
-    }
-    .wide .body{
-      max-width:100ch;
-    }
+    .wide .inner{ padding:30px 36px 32px; min-height:185px; }
+    .wide .title{ font-size:22px; margin-bottom:18px; }
+    .wide .body{ max-width:100ch; }
 
     /* SIDE (Closing) */
     .side{
@@ -147,7 +129,7 @@
       max-width:360px;
       border-radius:32px;
       box-shadow:var(--shadowSoft);
-      outline: 1px solid rgba(99,47,150,.22); /* subtle premium edge */
+      outline: 1px solid rgba(99,47,150,.22);
     }
     .side .inner{
       padding:28px 26px 30px;
@@ -169,14 +151,14 @@
     .consequence{ grid-column:1; grid-row:2; }
     .mechanism{ grid-column:1; grid-row:3; }
 
-    /* ===== CTA on DESKTOP: right side, aligned with mechanism like your reference ===== */
+    /* ===== CTA on DESKTOP ===== */
     .cta{
       grid-column:2;
       grid-row:3;
       justify-self:end;
       align-self:end;
       padding-right:10px;
-padding-bottom:36px;
+      padding-bottom:36px; /* lower like you wanted */
       display:flex;
     }
 
@@ -187,31 +169,33 @@ padding-bottom:36px;
       min-width:340px;
       height:60px;
       border-radius:24px;
-      background:rgba(106,56,163,1);
-      color:rgba(10,10,14,.92);
+
+      /* ONE solid purple (no 2 shades) */
+      background: var(--btn);
+      color: rgba(10,10,14,.92);
+
       font-size:18px;
       font-weight:800;
       letter-spacing:.02em;
+
       transition:opacity .12s ease, transform .08s ease;
-      box-shadow: 0 18px 60px rgba(106,56,163,.20);
+
+      /* remove “double layer” feel */
+      box-shadow:none;
     }
     .btn:hover{opacity:.92}
     .btn:active{transform:translateY(1px)}
 
+    /* spacer only exists to create scroll room (mobile only) */
+    .mobileSpacer{ display:none; }
+
     /* =========================================================
-       MOBILE: expensive Apple-minimal
-       - single column
-       - readable type
-       - clean spacing
-       - sticky CTA bar
+       MOBILE: expensive Apple-minimal + FIX overlap
        ========================================================= */
     @media (max-width: 900px){
       body{
-        padding:22px 14px 120px;
+        padding:22px 14px 28px;
       }
-      .wrap {
-  padding-bottom: 180px;
-}
 
       .grid{
         grid-template-columns: 1fr;
@@ -245,96 +229,63 @@ padding-bottom:36px;
         color:rgba(255,255,255,.82);
       }
 
-      /* Remove “hero” bloat on mobile — make it premium + tight */
-      .hero{
-        border-radius:28px;
-      }
-      .hero .inner{
-        padding:20px 16px 20px;
-        min-height:auto;
-      }
-      .hero .title{
-        font-size:13px;
-        margin-bottom:12px;
-        letter-spacing:.14em;
-      }
-      .hero .body{
-        font-size:17px;
-        line-height:1.85;
-        max-width:none;
-      }
+      /* tighten hero */
+      .hero{ border-radius:28px; }
+      .hero .inner{ padding:20px 16px 20px; min-height:auto; }
+      .hero .title{ font-size:13px; margin-bottom:12px; letter-spacing:.14em; }
+      .hero .body{ font-size:17px; line-height:1.85; max-width:none; }
 
-      /* Closing should NOT be a tiny “side card” on mobile */
+      /* closing becomes normal card */
       .side{
         max-width:none;
         justify-self:stretch;
         outline:none;
       }
-      .side .inner{
-        min-height:auto;
-        background:
-          radial-gradient(520px 260px at 20% 0%, rgba(99,47,150,.16), rgba(99,47,150,0) 60%),
-          linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
-      }
+      .side .inner{ min-height:auto; }
       .side .body{
         font-size:16px;
         max-width:none;
         color:rgba(255,255,255,.80);
       }
 
-      .wide .inner{
-        padding:18px 16px 18px;
-        min-height:auto;
+      .wide .inner{ padding:18px 16px 18px; min-height:auto; }
+      .wide .title{ font-size:13px; margin-bottom:12px; }
+
+      /* Sticky CTA: NO container card, just the button */
+      .cta{
+        position:fixed;
+        left:14px;
+        right:14px;
+        bottom: calc(14px + env(safe-area-inset-bottom));
+        z-index:50;
+
+        padding:0;
+        background:none;
+        border:none;
+        box-shadow:none;
+        backdrop-filter:none;
+        -webkit-backdrop-filter:none;
+
+        display:flex;
+        justify-content:stretch;
       }
-      .wide .title{
-        font-size:13px;
-        margin-bottom:12px;
+
+      .btn{
+        width:100%;
+        min-width:0;
+        height:56px;
+        border-radius:16px;
+        font-size:17px;
+
+        background: var(--btn); /* one purple */
+        box-shadow:none;        /* kill double layer */
       }
 
-      /* Sticky CTA bar (expensive app behavior) */
-.cta{
-  position: fixed;
-  left: 14px;
-  right: 14px;
-  bottom: calc(14px + env(safe-area-inset-bottom));
-  z-index: 50;
-
-  /* REMOVE the card look */
-  padding: 0;
-  background: none;
-  border: none;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-
-  display:flex;
-}
-      
-.btn{
-  appearance:none;
-  border:0;
-  cursor:pointer;
-  min-width:340px;
-  height:60px;
-  border-radius:24px;
-
-  background: var(--btn);          /* ONE solid purple */
-  color: rgba(10,10,14,.92);
-
-  font-size:18px;
-  font-weight:800;
-  letter-spacing:.02em;
-
-  transition:opacity .12s ease, transform .08s ease;
-
-  box-shadow: none;                /* remove the “second layer” look */
-}
-      /* Give content room under the sticky CTA */
-.wrap {
-  padding-bottom: 140px; /* matches CTA height + spacing */
-}
-
-
+      /* THIS is the real fix: guaranteed space under the last card */
+      .mobileSpacer{
+        display:block;
+        height: 190px; /* CTA height + breathing room */
+      }
     }
   </style>
 </head>
@@ -353,7 +304,7 @@ Since then, starting has felt heavier than it used to.</p>
         </div>
       </div>
 
-      <!-- CLOSING (SIDE on desktop, normal on mobile) -->
+      <!-- CLOSING -->
       <div class="card side closing">
         <div class="inner">
           <h2 class="title">Closing Insight</h2>
@@ -363,7 +314,7 @@ Until structure is installed, effort will always feel optional.</p>
         </div>
       </div>
 
-      <!-- CONSEQUENCE (WIDE) -->
+      <!-- CONSEQUENCE -->
       <div class="card wide consequence">
         <div class="inner">
           <h2 class="title">Consequence</h2>
@@ -373,7 +324,7 @@ Each restart without structure makes the pause come sooner next time.</p>
         </div>
       </div>
 
-      <!-- MECHANISM (WIDE) -->
+      <!-- MECHANISM -->
       <div class="card wide mechanism">
         <div class="inner">
           <h2 class="title">Hidden Mechanism</h2>
@@ -389,6 +340,9 @@ This isn’t hesitation. It’s protection against another restart that doesn’
       </div>
 
     </section>
+
+    <!-- MOBILE ONLY: creates space so last card is visible above sticky CTA -->
+    <div class="mobileSpacer" aria-hidden="true"></div>
   </main>
 
   <script>
