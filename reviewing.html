@@ -180,14 +180,20 @@
       display:none;
     }
 
-    @media (max-width: 640px){
-      body{ padding:22px 14px; place-items:start center; }
-      .card{
-        border-radius:34px;
-        padding:40px 20px 28px;
-        box-shadow:var(--shadowSoft);
-        margin-top:22px;
-      }
+@media (max-width: 640px){
+  body{
+    padding-top: calc(28px + env(safe-area-inset-top));
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-bottom: 22px;
+    place-items: start center;
+  }
+
+  .card{
+    margin-top: 16px;
+  }
+}
+
       .title{
         font-size:38px;
         line-height:1.10;
