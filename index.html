@@ -76,15 +76,23 @@
 
     .powered sup{font-size:10px; opacity:.65}
 
-    .title{
-      margin:0;
-      font-size:clamp(40px,6vw,84px);
-            max-width:64ch;
-      letter-spacing:.08em;
-      font-weight:700;
-      color:var(--white);
-      line-height:1.02;
-    }
+.title{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px; /* controls spacing between THE / DIAGNOSTIC */
+}
+
+.title-line{
+  white-space:nowrap; /* prevents bad breaks */
+}
+
+/* Mobile refinement */
+@media (max-width:640px){
+  .title{
+    gap:6px;
+  }
+}
 
     .sub{
       margin:18px auto 0;
@@ -134,7 +142,10 @@
   <main class="card">
     <div class="powered">POWERED BY MN8<sup>®</sup></div>
 
-    <h1 class="title">THE DIAGNOSTIC</h1>
+<h1 class="title">
+  <span class="title-line">THE</span>
+  <span class="title-line">DIAGNOSTIC</span>
+</h1>
 
     <p class="sub">
       A PRIVATE DIAGNOSTIC DESIGNED TO IDENTIFY WHY MOVING FORWARD
